@@ -1,0 +1,14 @@
+.profile {
+  min-height: 550px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  gap: 116px;
+}
+
+@media (max-width: 768px) {
+  .profile {
+    flex-direction: column;
+    gap: 20px;
+  }
+}

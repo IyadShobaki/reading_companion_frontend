@@ -1,0 +1,37 @@
+.modal__container_type_confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  max-width: 670px;
+  padding: 20px;
+}
+
+.modal__title_type_confirm {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-lg);
+  max-width: 367px;
+  text-align: center;
+}
+
+.modal__delete-btn_type_confirm {
+  align-self: unset;
+  margin-top: 16px;
+}
+
+.modal__cancel-btn {
+  border: none;
+  display: block;
+  margin: 0;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+@media (max-width: 768px) {
+}
