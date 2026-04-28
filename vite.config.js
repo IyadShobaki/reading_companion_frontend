@@ -8,4 +8,10 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  test: {
+    // Use jsdom to simulate browser globals (window, document, fetch, etc.)
+    environment: "jsdom",
+    // Automatically import vi, describe, it, expect in every test file
+    globals: true,
+  },
 });
