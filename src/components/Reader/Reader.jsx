@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 
 import Loading from "../Loading/Loading";
 import { booksService } from "../../services/books.service";
+import { progressStorage } from "../../utils/progressStorage";
 import "./Reader.css";
 
 /**
@@ -34,6 +35,7 @@ function Reader() {
   const [error, setError] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [goToPageInput, setGoToPageInput] = useState("");
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     if (!bookId) return;
@@ -48,6 +50,9 @@ function Reader() {
       .then((data) => {
         if (!cancelled) {
           setBook(data);
+          // Resume reading — restore last saved page if one exists
+          const savedPage = progressStorage.loadProgress(data.googleBookId);
+          if (savedPage) setPageNumber(savedPage);
           setIsLoading(false);
         }
       })
@@ -63,8 +68,15 @@ function Reader() {
     };
   }, [bookId]);
 
-  const handleNext = () => setPageNumber((p) => p + 1);
-  const handlePrev = () => setPageNumber((p) => Math.max(1, p - 1));
+  const handleNext = () => {
+    setPageNumber((p) => p + 1);
+    setIsSaved(false);
+  };
+
+  const handlePrev = () => {
+    setPageNumber((p) => Math.max(1, p - 1));
+    setIsSaved(false);
+  };
 
   const handleGoToPage = (evt) => {
     evt.preventDefault();
@@ -72,6 +84,7 @@ function Reader() {
     if (!Number.isNaN(page) && page > 0) {
       setPageNumber(page);
       setGoToPageInput("");
+      setIsSaved(false);
     }
   };
 
@@ -119,6 +132,11 @@ function Reader() {
   const webReaderLink = book?.webReaderLink ?? "";
 
   const isReadable = embeddable && viewability !== "NO_PAGES";
+
+  const handleSaveProgress = () => {
+    progressStorage.saveProgress(googleBookId, pageNumber);
+    setIsSaved(true);
+  };
 
   const viewerSrc = `https://books.google.com/books?id=${encodeURIComponent(googleBookId)}&pg=PA${pageNumber}&output=embed`;
 
@@ -217,6 +235,17 @@ function Reader() {
                     Go
                   </button>
                 </form>
+
+                <button
+                  type="button"
+                  className={`reader__control-btn${
+                    isSaved ? " reader__control-btn_saved" : ""
+                  }`}
+                  onClick={handleSaveProgress}
+                  aria-label={isSaved ? "Progress saved" : "Save progress"}
+                >
+                  {isSaved ? "Saved \u2713" : "Save Progress"}
+                </button>
               </div>
             </>
           ) : (

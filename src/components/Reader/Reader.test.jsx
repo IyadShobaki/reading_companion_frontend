@@ -12,6 +12,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import Reader from "./Reader";
 import { booksService } from "../../services/books.service";
+import { progressStorage } from "../../utils/progressStorage";
 
 // ---------------------------------------------------------------------------
 // Module mock
@@ -20,6 +21,14 @@ import { booksService } from "../../services/books.service";
 vi.mock("../../services/books.service", () => ({
   booksService: {
     getById: vi.fn(),
+  },
+}));
+
+vi.mock("../../utils/progressStorage", () => ({
+  progressStorage: {
+    saveProgress: vi.fn(),
+    loadProgress: vi.fn(),
+    clearProgress: vi.fn(),
   },
 }));
 
@@ -73,6 +82,8 @@ describe("Reader", () => {
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     vi.clearAllMocks();
+    // Default: no saved progress
+    progressStorage.loadProgress.mockReturnValue(null);
   });
 
   afterEach(() => {
@@ -273,5 +284,78 @@ describe("Reader", () => {
     renderAt(encodeURIComponent("abc123"));
     await act(() => vi.runAllTimersAsync());
     expect(booksService.getById).toHaveBeenCalledWith("abc123");
+  });
+
+  // -- Reading progress: restore --------------------------------------------
+
+  it("resumes from saved progress page when book loads", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    progressStorage.loadProgress.mockReturnValue(8);
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    expect(screen.getByText("Page 8")).toBeInTheDocument();
+    expect(screen.getByTitle(/reading clean code/i).src).toContain("pg=PA8");
+  });
+
+  it("calls loadProgress with the book's googleBookId", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    expect(progressStorage.loadProgress).toHaveBeenCalledWith("abc123");
+  });
+
+  it("starts at page 1 when no progress is saved", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    progressStorage.loadProgress.mockReturnValue(null);
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    expect(screen.getByText("Page 1")).toBeInTheDocument();
+  });
+
+  // -- Reading progress: save -----------------------------------------------
+
+  it("renders a Save Progress button in the controls toolbar", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    expect(
+      screen.getByRole("button", { name: /save progress/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("clicking Save Progress calls saveProgress with the current page", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    await userEvent.click(screen.getByRole("button", { name: /next page/i }));
+    await userEvent.click(
+      screen.getByRole("button", { name: /save progress/i }),
+    );
+    expect(progressStorage.saveProgress).toHaveBeenCalledWith("abc123", 2);
+  });
+
+  it("Save Progress button shows saved indicator after clicking", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    await userEvent.click(
+      screen.getByRole("button", { name: /save progress/i }),
+    );
+    expect(
+      screen.getByRole("button", { name: /progress saved/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("saved indicator resets after navigating to the next page", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    await userEvent.click(
+      screen.getByRole("button", { name: /save progress/i }),
+    );
+    await userEvent.click(screen.getByRole("button", { name: /next page/i }));
+    expect(
+      screen.getByRole("button", { name: /save progress/i }),
+    ).toBeInTheDocument();
   });
 });
