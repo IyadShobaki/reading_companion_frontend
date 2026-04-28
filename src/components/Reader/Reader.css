@@ -1,0 +1,183 @@
+/* ============================================================
+   Reader — full-screen reading experience layout
+   ============================================================ */
+
+/* ── Page wrapper ─────────────────────────────────────────── */
+
+.reader {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--header-height, 64px));
+  background-color: var(--color-bg);
+  padding: 0;
+}
+
+/* ── Metadata header ──────────────────────────────────────── */
+
+.reader__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  background-color: var(--color-black);
+  color: var(--color-white);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.reader__cover {
+  width: 56px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--border-radius, 4px);
+  flex-shrink: 0;
+}
+
+.reader__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.reader__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-white);
+}
+
+.reader__authors {
+  font-size: 0.875rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.reader__published {
+  font-size: 0.75rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Body: viewer + sidebar ───────────────────────────────── */
+
+.reader__body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Center viewer column ─────────────────────────────────── */
+
+.reader__viewer-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: var(--color-bg);
+}
+
+.reader__viewer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 480px;
+  background-color: #f4f4f4;
+}
+
+.reader__viewer-placeholder {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0;
+}
+
+/* ── Right sidebar ────────────────────────────────────────── */
+
+.reader__sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: var(--color-white, #fff);
+  overflow-y: auto;
+}
+
+/* ── Panel (shared between Notes and AI) ─────────────────── */
+
+.reader__panel {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.reader__panel-heading {
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+  padding: 12px 16px;
+  background-color: rgba(0, 0, 0, 0.04);
+  color: var(--color-black);
+}
+
+.reader__panel-body {
+  padding: 16px;
+  flex: 1;
+}
+
+.reader__panel-placeholder {
+  font-size: 0.85rem;
+  color: #888;
+  margin: 0;
+}
+
+/* Notes panel — slightly taller default */
+.reader__panel_notes .reader__panel-body {
+  min-height: 200px;
+}
+
+/* AI panel — takes remaining space */
+.reader__panel_ai {
+  flex: 1;
+}
+
+/* ── Full-page status messages ────────────────────────────── */
+
+.reader__fallback,
+.reader__error {
+  padding: 48px 24px;
+  text-align: center;
+  font-size: 1rem;
+  color: var(--color-black);
+}
+
+.reader__error {
+  color: var(--color-error, #cc0000);
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .reader__header {
+    padding: 12px 16px;
+  }
+
+  .reader__body {
+    flex-direction: column;
+  }
+
+  .reader__sidebar {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .reader__viewer {
+    min-height: 320px;
+  }
+}

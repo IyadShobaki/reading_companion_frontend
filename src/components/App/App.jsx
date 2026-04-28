@@ -9,6 +9,7 @@ import LoginModal from "../LoginModal/LoginModal";
 import RegisterModal from "../RegisterModal/RegisterModal";
 import UpdateProfileModal from "../UpdateProfileModal/UpdateProfileModal";
 import BookPreviewModal from "../BookPreviewModal/BookPreviewModal";
+import Reader from "../Reader/Reader";
 import Profile from "../Profile/Profile";
 import SearchResults from "../SearchResults/SearchResults";
 import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
@@ -140,6 +141,7 @@ function App() {
                 />
               }
             />
+            <Route path="/reader/:bookId" element={<Reader />} />
             <Route
               path="/profile"
               element={
