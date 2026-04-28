@@ -9,6 +9,7 @@ import LoginModal from "../LoginModal/LoginModal";
 import RegisterModal from "../RegisterModal/RegisterModal";
 import UpdateProfileModal from "../UpdateProfileModal/UpdateProfileModal";
 import Profile from "../Profile/Profile";
+import SearchResults from "../SearchResults/SearchResults";
 import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 import { useAuth } from "../../hooks/useAuth";
@@ -111,6 +112,10 @@ function App() {
           />
           <Routes>
             <Route path="/" element={<Main isLoggedIn={isLoggedIn} />} />
+            <Route
+              path="/search"
+              element={<SearchResults isLoggedIn={isLoggedIn} />}
+            />
             <Route
               path="/profile"
               element={

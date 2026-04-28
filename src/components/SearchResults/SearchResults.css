@@ -1,0 +1,20 @@
+.search-results {
+  flex-grow: 1;
+  padding: 32px 0 48px;
+}
+
+.search-results__heading {
+  font-size: var(--font-size-xl, 1.5rem);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 24px;
+}
+
+.search-results__message {
+  font-size: var(--font-size-base);
+  color: var(--color-black);
+  margin: 40px 0 0;
+}
+
+.search-results__message_error {
+  color: var(--color-error);
+}

@@ -22,6 +22,51 @@
   display: flex;
   gap: 20px;
 }
+
+/* Search form — sits between the date label and the nav toggle */
+.header__search-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 16px 0 auto;
+}
+
+.header__search-input {
+  height: 36px;
+  padding: 0 12px;
+  border: 1.5px solid var(--color-black);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  background: var(--color-white);
+  color: var(--color-black);
+  outline: none;
+  width: 220px;
+  transition: border-color 0.15s;
+}
+
+.header__search-input:focus {
+  border-color: var(--color-black);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.12);
+}
+
+.header__search-btn {
+  height: 36px;
+  padding: 0 16px;
+  background: var(--color-black);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.header__search-btn:hover {
+  opacity: 0.85;
+}
+
 .header__toggler-btn {
   display: none;
   background: none;
@@ -161,5 +206,13 @@
   }
   .header__user-container {
     order: -1;
+  }
+  .header__search-form {
+    margin: 0;
+    width: 100%;
+  }
+  .header__search-input {
+    flex: 1;
+    width: auto;
   }
 }

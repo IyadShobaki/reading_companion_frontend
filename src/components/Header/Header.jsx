@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import "./Header.css";
 import logo from "../../assets/images/logo.svg";
@@ -15,10 +15,13 @@ const currentDate = new Date().toLocaleString("default", {
 
 // Top navigation bar. Renders auth buttons for guests or a profile link for
 // logged-in users. The mobile nav closes automatically on route change.
+// Includes a search form that navigates to /search?q=… on submission.
 function Header({ handleLoginClick, handleRegisterClick, isLoggedIn }) {
   const { currentUser } = useContext(CurrentUserContext);
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Close the mobile nav whenever the user navigates to a different route.
   // Uses React's derived-state pattern (render-phase setState) instead of an
@@ -36,12 +39,41 @@ function Header({ handleLoginClick, handleRegisterClick, isLoggedIn }) {
     setIsNavOpen(!isNavOpen);
   };
 
+  const handleSearchSubmit = (evt) => {
+    evt.preventDefault();
+    const trimmed = searchQuery.trim();
+    if (!trimmed) return;
+    navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+  };
+
   return (
     <header className="header">
       <NavLink to="/">
         <img src={logo} alt="App Logo" className="header__logo" />
       </NavLink>
       <p className="header__date-and-location">{currentDate}</p>
+
+      <form
+        className="header__search-form"
+        onSubmit={handleSearchSubmit}
+        role="search"
+      >
+        <input
+          className="header__search-input"
+          type="search"
+          placeholder="Search books…"
+          aria-label="Search books"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button
+          className="header__search-btn"
+          type="submit"
+          aria-label="Submit search"
+        >
+          Search
+        </button>
+      </form>
 
       <button className="header__toggler-btn" onClick={toggleNav}>
         {isNavOpen ? "\u2715" : "\u2550"}
