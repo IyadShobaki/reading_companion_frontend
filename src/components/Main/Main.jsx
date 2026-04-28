@@ -33,6 +33,7 @@ const noop = () => {};
 function Main({
   isLoggedIn = false,
   savedBookIds = [],
+  onPreview = noop,
   onAddToLibrary = noop,
   onRemoveFromLibrary = noop,
 }) {
@@ -45,6 +46,7 @@ function Main({
           title={title}
           isLoggedIn={isLoggedIn}
           savedBookIds={savedBookIds}
+          onPreview={onPreview}
           onAddToLibrary={onAddToLibrary}
           onRemoveFromLibrary={onRemoveFromLibrary}
         />

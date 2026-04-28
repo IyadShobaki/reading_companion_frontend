@@ -9,6 +9,7 @@
  *   books               {Object[]} Array of normalised book objects
  *   isLoggedIn          {boolean}  Whether the current user is authenticated
  *   savedBookIds        {string[]} IDs of books currently in the user's library
+ *   onPreview           {Function} Called with the book object to open the preview modal
  *   onAddToLibrary      {Function} Forwarded to BookCard
  *   onRemoveFromLibrary {Function} Forwarded to BookCard
  */
@@ -23,6 +24,7 @@ function BookGrid({
   books,
   isLoggedIn = false,
   savedBookIds = [],
+  onPreview = noop,
   onAddToLibrary = noop,
   onRemoveFromLibrary = noop,
 }) {
@@ -34,6 +36,7 @@ function BookGrid({
             book={book}
             isLoggedIn={isLoggedIn}
             isSaved={savedBookIds.includes(book.googleBookId)}
+            onPreview={onPreview}
             onAddToLibrary={onAddToLibrary}
             onRemoveFromLibrary={onRemoveFromLibrary}
           />

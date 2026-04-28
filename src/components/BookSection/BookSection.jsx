@@ -26,6 +26,7 @@ function BookSection({
   sectionKey,
   isLoggedIn = false,
   savedBookIds = [],
+  onPreview = noop,
   onAddToLibrary = noop,
   onRemoveFromLibrary = noop,
 }) {
@@ -63,6 +64,7 @@ function BookSection({
           books={books}
           isLoggedIn={isLoggedIn}
           savedBookIds={savedBookIds}
+          onPreview={onPreview}
           onAddToLibrary={onAddToLibrary}
           onRemoveFromLibrary={onRemoveFromLibrary}
         />

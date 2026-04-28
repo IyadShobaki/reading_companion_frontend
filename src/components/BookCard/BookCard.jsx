@@ -4,6 +4,7 @@
  * Renders:
  * - Book cover image (or a text placeholder when no thumbnail is available)
  * - Title, authors, and an availability badge for non-embeddable books
+ * - "Preview" button — always visible; opens BookPreviewModal
  * - "Start Reading" button — always visible; navigates to the Reader page
  * - "Add to Library" / "Remove from Library" button — only for logged-in users
  *
@@ -11,6 +12,7 @@
  *   book              {Object}   Normalised book object from mapBookVolume
  *   isLoggedIn        {boolean}  Whether the current user is authenticated
  *   isSaved           {boolean}  Whether the book is already in the user's library
+ *   onPreview         {Function} Called with the full book object to open the preview modal
  *   onAddToLibrary    {Function} Called with the full book object when adding
  *   onRemoveFromLibrary {Function} Called with googleBookId when removing
  */
@@ -25,6 +27,7 @@ function BookCard({
   book,
   isLoggedIn = false,
   isSaved = false,
+  onPreview = noop,
   onAddToLibrary = noop,
   onRemoveFromLibrary = noop,
 }) {
@@ -76,6 +79,15 @@ function BookCard({
         )}
 
         <div className="book-card__actions">
+          <button
+            type="button"
+            className="book-card__btn book-card__btn_secondary"
+            onClick={() => onPreview(book)}
+            aria-label={`Preview ${title}`}
+          >
+            Preview
+          </button>
+
           <button
             type="button"
             className="book-card__btn book-card__btn_primary"

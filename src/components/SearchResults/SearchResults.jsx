@@ -26,6 +26,7 @@ const noop = () => {};
 function SearchResults({
   isLoggedIn = false,
   savedBookIds = [],
+  onPreview = noop,
   onAddToLibrary = noop,
   onRemoveFromLibrary = noop,
 }) {
@@ -114,6 +115,7 @@ function SearchResults({
         books={books}
         isLoggedIn={isLoggedIn}
         savedBookIds={savedBookIds}
+        onPreview={onPreview}
         onAddToLibrary={onAddToLibrary}
         onRemoveFromLibrary={onRemoveFromLibrary}
       />

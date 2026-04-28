@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
 import "./App.css";
@@ -8,6 +8,7 @@ import Footer from "../Footer/Footer";
 import LoginModal from "../LoginModal/LoginModal";
 import RegisterModal from "../RegisterModal/RegisterModal";
 import UpdateProfileModal from "../UpdateProfileModal/UpdateProfileModal";
+import BookPreviewModal from "../BookPreviewModal/BookPreviewModal";
 import Profile from "../Profile/Profile";
 import SearchResults from "../SearchResults/SearchResults";
 import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
@@ -35,6 +36,19 @@ function App() {
     clearError,
   } = useAuth();
   const { activeModal, openModal, closeModal } = useModal();
+
+  // Book whose preview modal is currently open (null = closed)
+  const [previewBook, setPreviewBook] = useState(null);
+
+  const handlePreview = (book) => {
+    setPreviewBook(book);
+    openModal("book-preview");
+  };
+
+  const handleClosePreview = useCallback(() => {
+    closeModal();
+    setPreviewBook(null);
+  }, [closeModal]);
 
   // Where to redirect after login — defaults to "/" if accessed directly
   const redirectPath = location.state?.from?.pathname || "/";
@@ -111,10 +125,20 @@ function App() {
             isLoggedIn={isLoggedIn}
           />
           <Routes>
-            <Route path="/" element={<Main isLoggedIn={isLoggedIn} />} />
+            <Route
+              path="/"
+              element={
+                <Main isLoggedIn={isLoggedIn} onPreview={handlePreview} />
+              }
+            />
             <Route
               path="/search"
-              element={<SearchResults isLoggedIn={isLoggedIn} />}
+              element={
+                <SearchResults
+                  isLoggedIn={isLoggedIn}
+                  onPreview={handlePreview}
+                />
+              }
             />
             <Route
               path="/profile"
@@ -153,6 +177,12 @@ function App() {
           onClose={handleCloseModal}
           isLoading={isLoading}
           serverError={error}
+        />
+        <BookPreviewModal
+          isOpen={activeModal === "book-preview"}
+          book={previewBook}
+          isLoggedIn={isLoggedIn}
+          onClose={handleClosePreview}
         />
       </div>
     </CurrentUserContext.Provider>
