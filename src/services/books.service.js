@@ -51,24 +51,58 @@ function appendApiKey(url) {
 }
 
 /**
+ * HTTP status codes that indicate a transient server-side condition worth retrying.
+ * 503 Service Unavailable, 429 Too Many Requests, 500/502/504 server errors.
+ */
+const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504]);
+
+/** Maximum number of retry attempts after the initial request. */
+const MAX_RETRIES = 2;
+
+/**
+ * Fetches a URL with automatic exponential-backoff retry for transient errors.
+ *
+ * Retry delays: 500 ms → 1 000 ms (attempt 0 → 1).
+ * Non-retryable errors (e.g. 400, 403, 404) are thrown immediately.
+ *
+ * @param {string} urlString - Fully-qualified URL string to fetch
+ * @param {number} [attempt=0] - Current attempt index (internal, not for callers)
+ * @returns {Promise<Response>} Resolved fetch Response
+ * @throws {Error} After all retries are exhausted or on a non-retryable status
+ */
+async function fetchWithRetry(urlString, attempt = 0) {
+  const response = await fetch(urlString);
+
+  if (!response.ok) {
+    if (RETRYABLE_STATUSES.has(response.status) && attempt < MAX_RETRIES) {
+      const delayMs = 500 * Math.pow(2, attempt); // 500ms, 1000ms
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      return fetchWithRetry(urlString, attempt + 1);
+    }
+    throw new Error(`Google Books API error: ${response.status}`);
+  }
+
+  return response;
+}
+
+/**
  * Fetches a Google Books API URL and returns an array of normalised Book objects.
- * Throws if the HTTP response is not OK.
+ * Delegates to fetchWithRetry for transient-error resilience.
  *
  * @param {URL} url - A fully constructed Google Books API URL
  * @returns {Promise<Object[]>} Array of normalised book objects
  * @throws {Error} On non-2xx HTTP status
  */
 async function fetchVolumes(url) {
-  const response = await fetch(url.toString());
-
-  if (!response.ok) {
-    throw new Error(`Google Books API error: ${response.status}`);
-  }
-
+  const response = await fetchWithRetry(url.toString());
   const data = await response.json();
 
-  // `items` is absent when the API returns zero results
-  return (data.items ?? []).map(mapBookVolume);
+  // `items` is absent when the API returns zero results.
+  // Filter out books that cannot be read in-app: non-embeddable volumes or
+  // volumes with no viewable pages would show a broken reader experience.
+  return (data.items ?? [])
+    .map(mapBookVolume)
+    .filter((book) => book.embeddable && book.viewability !== "NO_PAGES");
 }
 
 // ---------------------------------------------------------------------------
@@ -188,12 +222,7 @@ export const booksService = {
     );
     appendApiKey(url);
 
-    const response = await fetch(url.toString());
-
-    if (!response.ok) {
-      throw new Error(`Google Books API error: ${response.status}`);
-    }
-
+    const response = await fetchWithRetry(url.toString());
     const volume = await response.json();
     return mapBookVolume(volume);
   },

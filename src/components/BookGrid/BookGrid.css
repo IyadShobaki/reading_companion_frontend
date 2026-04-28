@@ -1,0 +1,23 @@
+/* Responsive book grid — auto-fills columns at a minimum card width */
+
+.book-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  /* Mobile: at least 2 columns; widens on larger screens */
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+@media (min-width: 600px) {
+  .book-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+}
+
+/* Each list item stretches to fill its grid cell so card heights align */
+.book-grid__item {
+  display: flex;
+}

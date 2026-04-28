@@ -13,5 +13,7 @@ export default defineConfig({
     environment: "jsdom",
     // Automatically import vi, describe, it, expect in every test file
     globals: true,
+    // Load jest-dom matchers globally before every test file
+    setupFiles: ["./src/test/setup.js"],
   },
 });

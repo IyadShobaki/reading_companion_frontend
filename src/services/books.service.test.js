@@ -42,11 +42,11 @@ const NO_ID_VOLUME = {
   accessInfo: {},
 };
 
-/** A single mock volume used in fetch-based tests. */
+/** A single mock volume used in fetch-based tests. Embeddable with viewable pages. */
 const MOCK_VOLUME = {
   id: "vol1",
   volumeInfo: { title: "Test Book", authors: ["Author A"] },
-  accessInfo: {},
+  accessInfo: { embeddable: true, viewability: "PARTIAL" },
 };
 
 // ---------------------------------------------------------------------------
@@ -210,6 +210,27 @@ describe("booksService", () => {
 
       await expect(booksService.search("fail")).rejects.toThrow("403");
     });
+
+    it("filters out books that are not embeddable or have no viewable pages", async () => {
+      const nonEmbeddable = {
+        id: "notembed",
+        volumeInfo: { title: "Non-Embeddable" },
+        accessInfo: { embeddable: false, viewability: "PARTIAL" },
+      };
+      const noPages = {
+        id: "nopages",
+        volumeInfo: { title: "No Pages" },
+        accessInfo: { embeddable: true, viewability: "NO_PAGES" },
+      };
+      global.fetch = mockFetchOk({
+        items: [MOCK_VOLUME, nonEmbeddable, noPages],
+      });
+
+      const results = await booksService.search("javascript");
+
+      expect(results).toHaveLength(1);
+      expect(results[0].googleBookId).toBe("vol1");
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -316,6 +337,79 @@ describe("booksService", () => {
       global.fetch = mockFetchError(404);
 
       await expect(booksService.getById("missing")).rejects.toThrow("404");
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Retry behavior (exponential backoff for transient errors)
+  // -------------------------------------------------------------------------
+
+  describe("retry behavior", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("retries on 503 and succeeds on the second attempt", async () => {
+      global.fetch = vi
+        .fn()
+        .mockResolvedValueOnce({ ok: false, status: 503 })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ items: [MOCK_VOLUME] }),
+        });
+
+      const promise = booksService.search("javascript");
+      await vi.runAllTimersAsync();
+      const results = await promise;
+
+      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(results).toHaveLength(1);
+    });
+
+    it("retries up to MAX_RETRIES times then throws on persistent 503", async () => {
+      global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 503 });
+
+      // Attach the rejection handler BEFORE advancing timers so the rejection
+      // is never unhandled while timers fire between retries.
+      const assertion = expect(
+        booksService.search("javascript"),
+      ).rejects.toThrow("503");
+      await vi.runAllTimersAsync();
+      await assertion;
+
+      // 1 initial attempt + 2 retries = 3 total calls
+      expect(fetch).toHaveBeenCalledTimes(3);
+    });
+
+    it("does not retry non-transient errors like 403", async () => {
+      global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 403 });
+
+      // 403 throws immediately — no setTimeout is scheduled, so no need for
+      // runAllTimersAsync. Awaiting the assertion directly avoids an unhandled
+      // rejection window.
+      await expect(booksService.search("javascript")).rejects.toThrow("403");
+
+      expect(fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it("retries on 429 Too Many Requests", async () => {
+      global.fetch = vi
+        .fn()
+        .mockResolvedValueOnce({ ok: false, status: 429 })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ items: [] }),
+        });
+
+      const promise = booksService.fetchSection("trending");
+      await vi.runAllTimersAsync();
+      await promise;
+
+      expect(fetch).toHaveBeenCalledTimes(2);
     });
   });
 });

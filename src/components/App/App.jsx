@@ -110,7 +110,7 @@ function App() {
             isLoggedIn={isLoggedIn}
           />
           <Routes>
-            <Route path="/" element={<Main />} />
+            <Route path="/" element={<Main isLoggedIn={isLoggedIn} />} />
             <Route
               path="/profile"
               element={
