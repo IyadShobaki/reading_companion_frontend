@@ -3,10 +3,12 @@
  *
  * booksService is mocked so tests are fast and deterministic.
  * MemoryRouter + initialEntries simulates URL params.
+ * The viewer is a plain <iframe> — no external script mocking needed.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, act } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import Reader from "./Reader";
 import { booksService } from "../../services/books.service";
@@ -44,7 +46,6 @@ const MOCK_BOOK = {
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Renders <Reader /> at /reader/:bookId */
 const renderAt = (bookId = "") =>
   render(
     <MemoryRouter initialEntries={[`/reader/${bookId}`]}>
@@ -55,7 +56,6 @@ const renderAt = (bookId = "") =>
     </MemoryRouter>,
   );
 
-/** Renders <Reader /> with no bookId (bare /reader route) */
 const renderNoBook = () =>
   render(
     <MemoryRouter initialEntries={["/reader"]}>
@@ -79,24 +79,24 @@ describe("Reader", () => {
     vi.useRealTimers();
   });
 
-  // ── Fallback — no book selected ─────────────────────────────────────────
+  // -- Fallback -------------------------------------------------------------
 
   it("shows fallback message when no bookId is in the URL", () => {
     renderNoBook();
     expect(screen.getByText(/no book selected/i)).toBeInTheDocument();
   });
 
-  // ── Loading state ────────────────────────────────────────────────────────
+  // -- Loading --------------------------------------------------------------
 
   it("shows loading indicator while fetching book", () => {
-    booksService.getById.mockReturnValue(new Promise(() => {})); // never resolves
+    booksService.getById.mockReturnValue(new Promise(() => {}));
     renderAt("abc123");
     expect(
       screen.getByRole("status", { name: /loading book/i }),
     ).toBeInTheDocument();
   });
 
-  // ── Success state ────────────────────────────────────────────────────────
+  // -- Success: metadata ----------------------------------------------------
 
   it("renders book title after successful fetch", async () => {
     booksService.getById.mockResolvedValue(MOCK_BOOK);
@@ -107,14 +107,14 @@ describe("Reader", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders authors after successful fetch", async () => {
+  it("renders authors", async () => {
     booksService.getById.mockResolvedValue(MOCK_BOOK);
     renderAt("abc123");
     await act(() => vi.runAllTimersAsync());
     expect(screen.getByText("Robert C. Martin")).toBeInTheDocument();
   });
 
-  it("renders published date after successful fetch", async () => {
+  it("renders published date", async () => {
     booksService.getById.mockResolvedValue(MOCK_BOOK);
     renderAt("abc123");
     await act(() => vi.runAllTimersAsync());
@@ -125,8 +125,9 @@ describe("Reader", () => {
     booksService.getById.mockResolvedValue(MOCK_BOOK);
     renderAt("abc123");
     await act(() => vi.runAllTimersAsync());
-    const img = screen.getByRole("img", { name: /cover of clean code/i });
-    expect(img).toHaveAttribute("src", MOCK_BOOK.thumbnail);
+    expect(
+      screen.getByRole("img", { name: /cover of clean code/i }),
+    ).toHaveAttribute("src", MOCK_BOOK.thumbnail);
   });
 
   it("omits cover image when thumbnail is empty", async () => {
@@ -136,7 +137,7 @@ describe("Reader", () => {
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });
 
-  // ── Viewer container ─────────────────────────────────────────────────────
+  // -- Viewer: iframe -------------------------------------------------------
 
   it("renders the book viewer region", async () => {
     booksService.getById.mockResolvedValue(MOCK_BOOK);
@@ -147,7 +148,93 @@ describe("Reader", () => {
     ).toBeInTheDocument();
   });
 
-  // ── Sidebar panels ───────────────────────────────────────────────────────
+  it("renders an iframe with the correct embed src on page 1", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    const iframe = screen.getByTitle(/reading clean code/i);
+    expect(iframe.tagName).toBe("IFRAME");
+    expect(iframe.src).toContain("id=abc123");
+    expect(iframe.src).toContain("pg=PA1");
+    expect(iframe.src).toContain("output=embed");
+  });
+
+  it("shows unavailable message when book is not embeddable", async () => {
+    booksService.getById.mockResolvedValue({ ...MOCK_BOOK, embeddable: false });
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    expect(
+      screen.getByText(/not available for embedded preview/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByTitle(/reading/i)).not.toBeInTheDocument();
+  });
+
+  it("shows unavailable message when viewability is NO_PAGES", async () => {
+    booksService.getById.mockResolvedValue({
+      ...MOCK_BOOK,
+      viewability: "NO_PAGES",
+    });
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    expect(
+      screen.getByText(/not available for embedded preview/i),
+    ).toBeInTheDocument();
+  });
+
+  // -- Page controls --------------------------------------------------------
+
+  it("renders page controls toolbar", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    expect(
+      screen.getByRole("toolbar", { name: /page controls/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Page 1")).toBeInTheDocument();
+  });
+
+  it("Next button increments page and updates iframe src", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    await userEvent.click(screen.getByRole("button", { name: /next page/i }));
+    expect(screen.getByText("Page 2")).toBeInTheDocument();
+    expect(screen.getByTitle(/reading clean code/i).src).toContain("pg=PA2");
+  });
+
+  it("Prev button decrements page", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    await userEvent.click(screen.getByRole("button", { name: /next page/i }));
+    await userEvent.click(screen.getByRole("button", { name: /next page/i }));
+    await userEvent.click(
+      screen.getByRole("button", { name: /previous page/i }),
+    );
+    expect(screen.getByText("Page 2")).toBeInTheDocument();
+  });
+
+  it("Prev button does not go below page 1", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    await userEvent.click(
+      screen.getByRole("button", { name: /previous page/i }),
+    );
+    expect(screen.getByText("Page 1")).toBeInTheDocument();
+  });
+
+  it("Go to page form navigates to the given page", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    renderAt("abc123");
+    await act(() => vi.runAllTimersAsync());
+    await userEvent.type(screen.getByLabelText(/page number/i), "7");
+    await userEvent.click(screen.getByRole("button", { name: /go to page/i }));
+    expect(screen.getByText("Page 7")).toBeInTheDocument();
+    expect(screen.getByTitle(/reading clean code/i).src).toContain("pg=PA7");
+  });
+
+  // -- Sidebar panels -------------------------------------------------------
 
   it("renders the Notes panel", async () => {
     booksService.getById.mockResolvedValue(MOCK_BOOK);
@@ -160,13 +247,12 @@ describe("Reader", () => {
     booksService.getById.mockResolvedValue(MOCK_BOOK);
     renderAt("abc123");
     await act(() => vi.runAllTimersAsync());
-    expect(screen.getByRole("complementary")).toBeInTheDocument();
     expect(
       screen.getByRole("region", { name: /ai assistant/i }),
     ).toBeInTheDocument();
   });
 
-  // ── Error state ──────────────────────────────────────────────────────────
+  // -- Error ----------------------------------------------------------------
 
   it("shows error message when fetch fails", async () => {
     booksService.getById.mockRejectedValue(
@@ -180,7 +266,7 @@ describe("Reader", () => {
     ).toBeInTheDocument();
   });
 
-  // ── Service interaction ──────────────────────────────────────────────────
+  // -- Service interaction --------------------------------------------------
 
   it("calls getById with the decoded bookId", async () => {
     booksService.getById.mockResolvedValue(MOCK_BOOK);

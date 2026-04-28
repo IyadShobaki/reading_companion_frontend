@@ -8,19 +8,21 @@ import "./Reader.css";
 /**
  * Reader — full-screen reading experience for a single book.
  *
- * Reads the `bookId` URL parameter, fetches book metadata from the Google Books
- * API, and renders a three-region layout:
+ * Reads the `bookId` URL parameter, fetches book metadata, then embeds the
+ * book using Google Books' iframe embed URL:
+ *
+ *   https://books.google.com/books?id={googleBookId}&pg=PA{pageNumber}&output=embed
+ *
+ * Page navigation is driven by React state — changing `pageNumber` updates the
+ * iframe `src`, which Google Books responds to by rendering that page.
  *
  *   ┌──────────────── metadata header ─────────────────┐
  *   │ cover  │  title · authors · published date        │
  *   ├──────────────────┬────────────────────────────────┤
  *   │                  │  Notes panel                   │
- *   │  Embedded viewer │─────────────────────────────── │
- *   │  (Step 7)        │  AI panel                      │
+ *   │  iframe viewer   │─────────────────────────────── │
+ *   │  + nav controls  │  AI panel                      │
  *   └──────────────────┴────────────────────────────────┘
- *
- * The embedded viewer and panel interactions are wired in later steps.
- * This component provides the layout scaffold.
  *
  * Route:  /reader/:bookId  (public — no ProtectedRoute wrapper)
  */
@@ -30,6 +32,8 @@ function Reader() {
   const [book, setBook] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [goToPageInput, setGoToPageInput] = useState("");
 
   useEffect(() => {
     if (!bookId) return;
@@ -58,6 +62,18 @@ function Reader() {
       cancelled = true;
     };
   }, [bookId]);
+
+  const handleNext = () => setPageNumber((p) => p + 1);
+  const handlePrev = () => setPageNumber((p) => Math.max(1, p - 1));
+
+  const handleGoToPage = (evt) => {
+    evt.preventDefault();
+    const page = parseInt(goToPageInput, 10);
+    if (!Number.isNaN(page) && page > 0) {
+      setPageNumber(page);
+      setGoToPageInput("");
+    }
+  };
 
   // ── No bookId in URL ───────────────────────────────────────────────────────
   if (!bookId) {
@@ -97,6 +113,14 @@ function Reader() {
   const authors = book?.authors ?? [];
   const thumbnail = book?.thumbnail ?? "";
   const publishedDate = book?.publishedDate ?? "";
+  const googleBookId = book?.googleBookId ?? "";
+  const embeddable = book?.embeddable ?? false;
+  const viewability = book?.viewability ?? "NO_PAGES";
+  const webReaderLink = book?.webReaderLink ?? "";
+
+  const isReadable = embeddable && viewability !== "NO_PAGES";
+
+  const viewerSrc = `https://books.google.com/books?id=${encodeURIComponent(googleBookId)}&pg=PA${pageNumber}&output=embed`;
 
   return (
     <main className="reader">
@@ -122,11 +146,98 @@ function Reader() {
 
       {/* ── Body: viewer + sidebar ── */}
       <div className="reader__body">
-        {/* Center: embedded viewer placeholder (wired in Step 7) */}
+        {/* Center: embedded viewer */}
         <section className="reader__viewer-col" aria-label="Book viewer">
-          <div className="reader__viewer">
-            <p className="reader__viewer-placeholder">Viewer loading…</p>
-          </div>
+          {isReadable ? (
+            <>
+              <iframe
+                className="reader__viewer"
+                title={`Reading ${title}`}
+                src={viewerSrc}
+                allowFullScreen
+              />
+
+              {/* Page navigation controls */}
+              <div
+                className="reader__controls"
+                role="toolbar"
+                aria-label="Page controls"
+              >
+                <button
+                  type="button"
+                  className="reader__control-btn"
+                  onClick={handlePrev}
+                  aria-label="Previous page"
+                >
+                  ← Prev
+                </button>
+
+                <span
+                  className="reader__page-indicator"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  Page {pageNumber}
+                </span>
+
+                <button
+                  type="button"
+                  className="reader__control-btn"
+                  onClick={handleNext}
+                  aria-label="Next page"
+                >
+                  Next →
+                </button>
+
+                <form
+                  className="reader__go-to-form"
+                  onSubmit={handleGoToPage}
+                  aria-label="Go to page"
+                >
+                  <label
+                    htmlFor="reader-go-to-page"
+                    className="reader__go-to-label"
+                  >
+                    Go to
+                  </label>
+                  <input
+                    id="reader-go-to-page"
+                    type="number"
+                    className="reader__go-to-input"
+                    value={goToPageInput}
+                    onChange={(e) => setGoToPageInput(e.target.value)}
+                    min="1"
+                    aria-label="Page number"
+                  />
+                  <button
+                    type="submit"
+                    className="reader__control-btn"
+                    aria-label="Go to page"
+                  >
+                    Go
+                  </button>
+                </form>
+              </div>
+            </>
+          ) : (
+            <p className="reader__viewer-message">
+              This book is not available for embedded preview.
+              {webReaderLink && (
+                <>
+                  {" "}
+                  Try{" "}
+                  <a
+                    href={webReaderLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    opening on Google Play Books
+                  </a>
+                  .
+                </>
+              )}
+            </p>
+          )}
         </section>
 
         {/* Right: Notes and AI panels */}
