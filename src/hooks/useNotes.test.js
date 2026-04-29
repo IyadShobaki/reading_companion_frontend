@@ -107,6 +107,21 @@ describe("useNotes", () => {
     expect(result.current.isLoading).toBe(false);
   });
 
+  it("sets 401 session-expired message when fetchNotes returns 401", async () => {
+    const err = new Error("Unauthorized");
+    err.status = 401;
+    notesService.getByBook.mockRejectedValue(err);
+    const { result } = renderHook(() => useNotes());
+
+    await act(async () => {
+      await result.current.fetchNotes(GOOGLE_BOOK_ID);
+    });
+
+    expect(result.current.error).toBe(
+      "Your session has expired. Please sign in again.",
+    );
+  });
+
   // ── addNote ───────────────────────────────────────────────────────────────
 
   it("shows a temp note immediately then replaces with the server note", async () => {
@@ -147,6 +162,54 @@ describe("useNotes", () => {
 
     expect(result.current.notes).toHaveLength(0);
     expect(result.current.error).toBe("Save failed");
+  });
+
+  it("sets 401 session-expired message when create returns 401", async () => {
+    const err = new Error("Unauthorized");
+    err.status = 401;
+    notesService.create.mockRejectedValue(err);
+    const { result } = renderHook(() => useNotes());
+
+    await act(async () => {
+      try {
+        await result.current.addNote({
+          googleBookId: GOOGLE_BOOK_ID,
+          pageNumber: 1,
+          content: "Test",
+        });
+      } catch {
+        // expected
+      }
+    });
+
+    expect(result.current.notes).toHaveLength(0);
+    expect(result.current.error).toBe(
+      "Your session has expired. Please sign in again.",
+    );
+  });
+
+  it("sets 403 permission message when create returns 403", async () => {
+    const err = new Error("Forbidden");
+    err.status = 403;
+    notesService.create.mockRejectedValue(err);
+    const { result } = renderHook(() => useNotes());
+
+    await act(async () => {
+      try {
+        await result.current.addNote({
+          googleBookId: GOOGLE_BOOK_ID,
+          pageNumber: 1,
+          content: "Test",
+        });
+      } catch {
+        // expected
+      }
+    });
+
+    expect(result.current.notes).toHaveLength(0);
+    expect(result.current.error).toBe(
+      "You don't have permission to add notes for this book.",
+    );
   });
 
   // ── updateNote ────────────────────────────────────────────────────────────
@@ -191,6 +254,56 @@ describe("useNotes", () => {
     expect(result.current.error).toBe("Update failed");
   });
 
+  it("sets 401 session-expired message when update returns 401", async () => {
+    notesService.getByBook.mockResolvedValue([MOCK_NOTE_A]);
+    const err = new Error("Unauthorized");
+    err.status = 401;
+    notesService.update.mockRejectedValue(err);
+    const { result } = renderHook(() => useNotes());
+
+    await act(async () => {
+      await result.current.fetchNotes(GOOGLE_BOOK_ID);
+    });
+
+    await act(async () => {
+      try {
+        await result.current.updateNote(MOCK_NOTE_A._id, { content: "x" });
+      } catch {
+        // expected
+      }
+    });
+
+    expect(result.current.notes[0].content).toBe(MOCK_NOTE_A.content);
+    expect(result.current.error).toBe(
+      "Your session has expired. Please sign in again.",
+    );
+  });
+
+  it("sets 403 permission message when update returns 403", async () => {
+    notesService.getByBook.mockResolvedValue([MOCK_NOTE_A]);
+    const err = new Error("Forbidden");
+    err.status = 403;
+    notesService.update.mockRejectedValue(err);
+    const { result } = renderHook(() => useNotes());
+
+    await act(async () => {
+      await result.current.fetchNotes(GOOGLE_BOOK_ID);
+    });
+
+    await act(async () => {
+      try {
+        await result.current.updateNote(MOCK_NOTE_A._id, { content: "x" });
+      } catch {
+        // expected
+      }
+    });
+
+    expect(result.current.notes[0].content).toBe(MOCK_NOTE_A.content);
+    expect(result.current.error).toBe(
+      "You don't have permission to edit this note.",
+    );
+  });
+
   // ── removeNote ────────────────────────────────────────────────────────────
 
   it("removes a note from the list optimistically", async () => {
@@ -227,6 +340,48 @@ describe("useNotes", () => {
 
     expect(result.current.notes).toHaveLength(1);
     expect(result.current.error).toBe("Delete failed");
+  });
+
+  it("sets 401 session-expired message when remove returns 401", async () => {
+    notesService.getByBook.mockResolvedValue([MOCK_NOTE_A]);
+    const err = new Error("Unauthorized");
+    err.status = 401;
+    notesService.remove.mockRejectedValue(err);
+    const { result } = renderHook(() => useNotes());
+
+    await act(async () => {
+      await result.current.fetchNotes(GOOGLE_BOOK_ID);
+    });
+
+    await act(async () => {
+      await result.current.removeNote(MOCK_NOTE_A._id);
+    });
+
+    expect(result.current.notes).toHaveLength(1);
+    expect(result.current.error).toBe(
+      "Your session has expired. Please sign in again.",
+    );
+  });
+
+  it("sets 403 permission message when remove returns 403", async () => {
+    notesService.getByBook.mockResolvedValue([MOCK_NOTE_A]);
+    const err = new Error("Forbidden");
+    err.status = 403;
+    notesService.remove.mockRejectedValue(err);
+    const { result } = renderHook(() => useNotes());
+
+    await act(async () => {
+      await result.current.fetchNotes(GOOGLE_BOOK_ID);
+    });
+
+    await act(async () => {
+      await result.current.removeNote(MOCK_NOTE_A._id);
+    });
+
+    expect(result.current.notes).toHaveLength(1);
+    expect(result.current.error).toBe(
+      "You don't have permission to delete this note.",
+    );
   });
 
   // ── clearNotes ────────────────────────────────────────────────────────────

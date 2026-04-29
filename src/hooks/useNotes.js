@@ -53,7 +53,11 @@ export const useNotes = () => {
       const data = await notesService.getByBook(googleBookId);
       setNotes(data ?? []);
     } catch (err) {
-      setError(err.message || "Failed to load notes.");
+      if (err.status === 401) {
+        setError("Your session has expired. Please sign in again.");
+      } else {
+        setError(err.message || "Failed to load notes.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -88,7 +92,13 @@ export const useNotes = () => {
     } catch (err) {
       // Rollback — remove temp note
       setNotes((prev) => prev.filter((n) => n._id !== tempId));
-      setError(err.message || "Failed to save note.");
+      if (err.status === 401) {
+        setError("Your session has expired. Please sign in again.");
+      } else if (err.status === 403) {
+        setError("You don't have permission to add notes for this book.");
+      } else {
+        setError(err.message || "Failed to save note.");
+      }
       throw err;
     }
   }, []);
@@ -121,7 +131,13 @@ export const useNotes = () => {
       } catch (err) {
         // Rollback to the pre-update snapshot
         setNotes(snapshot);
-        setError(err.message || "Failed to update note.");
+        if (err.status === 401) {
+          setError("Your session has expired. Please sign in again.");
+        } else if (err.status === 403) {
+          setError("You don't have permission to edit this note.");
+        } else {
+          setError(err.message || "Failed to update note.");
+        }
         throw err;
       }
     },
@@ -148,7 +164,13 @@ export const useNotes = () => {
       } catch (err) {
         // Rollback
         setNotes(snapshot);
-        setError(err.message || "Failed to delete note.");
+        if (err.status === 401) {
+          setError("Your session has expired. Please sign in again.");
+        } else if (err.status === 403) {
+          setError("You don't have permission to delete this note.");
+        } else {
+          setError(err.message || "Failed to delete note.");
+        }
       }
     },
     [notes],
