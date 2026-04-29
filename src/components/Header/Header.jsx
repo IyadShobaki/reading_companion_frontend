@@ -102,16 +102,21 @@ function Header({ handleLoginClick, handleRegisterClick, isLoggedIn }) {
           </>
         )}
         {isLoggedIn && (
-          <NavLink className="header__nav-link" to="/profile">
-            <div className="header__user-container">
-              <p className="header__username">{username}</p>
-              <UserAvatar
-                username={username}
-                avatar={avatar}
-                className="header__avatar"
-              />
-            </div>
-          </NavLink>
+          <>
+            <NavLink className="header__nav-link" to="/library">
+              My Library
+            </NavLink>
+            <NavLink className="header__nav-link" to="/profile">
+              <div className="header__user-container">
+                <p className="header__username">{username}</p>
+                <UserAvatar
+                  username={username}
+                  avatar={avatar}
+                  className="header__avatar"
+                />
+              </div>
+            </NavLink>
+          </>
         )}
       </nav>
     </header>

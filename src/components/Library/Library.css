@@ -1,0 +1,30 @@
+/* ── Library page ──────────────────────────────────────────────────────── */
+
+.library {
+  max-width: var(--content-max-width, 1280px);
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.library__heading {
+  font-size: var(--font-size-xl, 2rem);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-black);
+  margin: 0 0 32px;
+}
+
+/* ── State messages ──────────────────────────────────────────────────────── */
+
+.library__empty {
+  font-size: var(--font-size-base, 1rem);
+  color: var(--color-secondary-text, #666);
+  padding: 40px 0;
+  text-align: center;
+}
+
+.library__error {
+  font-size: var(--font-size-base, 1rem);
+  color: var(--color-error, #cc0000);
+  padding: 40px 0;
+  text-align: center;
+}
