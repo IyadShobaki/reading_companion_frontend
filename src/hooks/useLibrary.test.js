@@ -82,6 +82,17 @@ describe("useLibrary", () => {
     expect(result.current.savedBooks).toEqual([]);
   });
 
+  it("fetchLibrary shows a session-expired message on 401", async () => {
+    const err = Object.assign(new Error("Unauthorized"), { status: 401 });
+    libraryService.getAll.mockRejectedValue(err);
+    const { result } = renderHook(() => useLibrary());
+    await act(() => result.current.fetchLibrary());
+    expect(result.current.error).toBe(
+      "Your session has expired. Please sign in again.",
+    );
+    expect(result.current.savedBooks).toEqual([]);
+  });
+
   it("fetchLibrary sets isLoading true during the fetch", async () => {
     let resolveGetAll;
     libraryService.getAll.mockReturnValue(
@@ -140,6 +151,29 @@ describe("useLibrary", () => {
     expect(result.current.error).toBe("Server error");
   });
 
+  it("addBook rolls back and shows a friendly message on 409 (duplicate)", async () => {
+    const err = Object.assign(new Error("Conflict"), { status: 409 });
+    libraryService.add.mockRejectedValue(err);
+    const { result } = renderHook(() => useLibrary());
+    await act(() => result.current.addBook(BOOK_A));
+    // Rollback — the optimistic add is reversed
+    expect(result.current.savedBooks).toEqual([]);
+    expect(result.current.error).toBe(
+      "This book is already saved in your library.",
+    );
+  });
+
+  it("addBook shows a session-expired message on 401", async () => {
+    const err = Object.assign(new Error("Unauthorized"), { status: 401 });
+    libraryService.add.mockRejectedValue(err);
+    const { result } = renderHook(() => useLibrary());
+    await act(() => result.current.addBook(BOOK_A));
+    expect(result.current.savedBooks).toEqual([]);
+    expect(result.current.error).toBe(
+      "Your session has expired. Please sign in again.",
+    );
+  });
+
   // ── removeBook ────────────────────────────────────────────────────────────
 
   it("removeBook optimistically removes the book before the API resolves", async () => {
@@ -180,6 +214,32 @@ describe("useLibrary", () => {
     // Rolled back — book should be there again
     expect(result.current.savedBooks).toContainEqual(BOOK_A);
     expect(result.current.error).toBe("Remove failed");
+  });
+
+  it("removeBook rolls back and shows a session-expired message on 401", async () => {
+    const err = Object.assign(new Error("Unauthorized"), { status: 401 });
+    libraryService.getAll.mockResolvedValue([BOOK_A]);
+    libraryService.remove.mockRejectedValue(err);
+    const { result } = renderHook(() => useLibrary());
+    await act(() => result.current.fetchLibrary());
+    await act(() => result.current.removeBook("aaa"));
+    expect(result.current.savedBooks).toContainEqual(BOOK_A);
+    expect(result.current.error).toBe(
+      "Your session has expired. Please sign in again.",
+    );
+  });
+
+  it("removeBook rolls back and shows a permission message on 403", async () => {
+    const err = Object.assign(new Error("Forbidden"), { status: 403 });
+    libraryService.getAll.mockResolvedValue([BOOK_A]);
+    libraryService.remove.mockRejectedValue(err);
+    const { result } = renderHook(() => useLibrary());
+    await act(() => result.current.fetchLibrary());
+    await act(() => result.current.removeBook("aaa"));
+    expect(result.current.savedBooks).toContainEqual(BOOK_A);
+    expect(result.current.error).toBe(
+      "You don't have permission to remove this book.",
+    );
   });
 
   // ── clearLibrary ──────────────────────────────────────────────────────────

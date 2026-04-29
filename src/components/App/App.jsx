@@ -42,6 +42,10 @@ function App() {
   const { activeModal, openModal, closeModal } = useModal();
   const library = useLibrary();
 
+  // Stable references for the isLoggedIn effect dep array —
+  // both are useCallback with [] deps so their identities never change.
+  const { fetchLibrary, clearLibrary } = library;
+
   // Book whose preview modal is currently open (null = closed)
   const [previewBook, setPreviewBook] = useState(null);
 
@@ -71,8 +75,7 @@ function App() {
     await signin(credentials.email, credentials.password);
     closeModal();
     navigate(redirectPath);
-    // Fetch the user's library after login so saved state is immediately available
-    library.fetchLibrary();
+    // Library is fetched by the isLoggedIn effect below — no explicit call needed
   };
 
   // After registration always land on the home page, not the previously attempted route
@@ -80,17 +83,18 @@ function App() {
     await signup(credentials);
     closeModal();
     navigate("/");
-    // Fetch library after registration (starts empty but keeps the flow consistent)
-    library.fetchLibrary();
+    // Library is fetched by the isLoggedIn effect below — no explicit call needed
   };
 
   const handleUpdateProfile = (updatedData) => updateProfile(updatedData);
 
-  // Clear library state on logout so stale data never leaks between accounts
+  // Clear library state on logout so stale data never leaks between accounts.
+  // clearLibrary is called here for immediate UI feedback; the isLoggedIn
+  // effect below would also clear it but on the next render cycle.
   const handleLogout = useCallback(() => {
     logout();
-    library.clearLibrary();
-  }, [logout, library]);
+    clearLibrary();
+  }, [logout, clearLibrary]);
 
   // Memoised so the Escape/overlay effect does not re-register on every render.
   // Also clears any server error so stale messages don't linger between opens.
@@ -103,6 +107,18 @@ function App() {
   useEffect(() => {
     restoreSession();
   }, [restoreSession]);
+
+  // Fetch the library whenever the user becomes authenticated (login, registration,
+  // or session restoration) and clear it when they sign out.
+  // Using stable fetchLibrary/clearLibrary references (both are useCallback [])
+  // means this effect fires only when isLoggedIn actually changes.
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchLibrary();
+    } else {
+      clearLibrary();
+    }
+  }, [isLoggedIn, fetchLibrary, clearLibrary]);
 
   // Register Escape-key and overlay-click handlers only while a modal is open.
   // Listeners are cleaned up when the modal closes to avoid memory leaks.

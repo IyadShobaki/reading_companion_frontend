@@ -51,6 +51,9 @@ export const useLibrary = () => {
   /**
    * Load (or reload) the library from the backend.
    * Should be called after login and on library page mount.
+   *
+   * On 401 the JWT is invalid or expired; surface a sign-in prompt instead
+   * of a generic error so the user knows the right next action.
    */
   const fetchLibrary = useCallback(async () => {
     setIsLoading(true);
@@ -59,7 +62,11 @@ export const useLibrary = () => {
       const books = await libraryService.getAll();
       setSavedBooks(books);
     } catch (err) {
-      setError(err.message || "Failed to load library.");
+      if (err.status === 401) {
+        setError("Your session has expired. Please sign in again.");
+      } else {
+        setError(err.message || "Failed to load library.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -77,11 +84,19 @@ export const useLibrary = () => {
     try {
       await libraryService.add(book);
     } catch (err) {
-      // Rollback
+      // Always rollback the optimistic add — even on 409 (duplicate) the
+      // local state may now contain two copies of the same book, so we
+      // remove the one we just appended.
       setSavedBooks((prev) =>
         prev.filter((b) => b.googleBookId !== book.googleBookId),
       );
-      setError(err.message || "Failed to add book to library.");
+      if (err.status === 409) {
+        setError("This book is already saved in your library.");
+      } else if (err.status === 401) {
+        setError("Your session has expired. Please sign in again.");
+      } else {
+        setError(err.message || "Failed to add book to library.");
+      }
     }
   }, []);
 
@@ -104,7 +119,13 @@ export const useLibrary = () => {
       } catch (err) {
         // Rollback
         setSavedBooks(snapshot);
-        setError(err.message || "Failed to remove book from library.");
+        if (err.status === 401) {
+          setError("Your session has expired. Please sign in again.");
+        } else if (err.status === 403) {
+          setError("You don't have permission to remove this book.");
+        } else {
+          setError(err.message || "Failed to remove book from library.");
+        }
       }
     },
     [savedBooks],

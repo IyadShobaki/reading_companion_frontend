@@ -21,6 +21,9 @@ export function useBookSection(sectionKey) {
     // Cancellation flag — prevents state updates on an unmounted component
     let cancelled = false;
 
+    // Canonical async data-fetching pattern: set loading flag synchronously
+    // before the async call so the UI reflects the in-flight state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     setError(null);
 

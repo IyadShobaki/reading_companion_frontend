@@ -44,6 +44,9 @@ function Reader() {
 
     let cancelled = false;
 
+    // Canonical async data-fetching pattern: set loading flag before the
+    // async call so the UI shows a spinner immediately.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     setError(null);
 

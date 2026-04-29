@@ -25,9 +25,12 @@ function NoteForm({ currentPage, initialValues, onSubmit, onCancel }) {
   const [content, setContent] = useState(initialValues?.content ?? "");
   const [contentError, setContentError] = useState("");
 
-  // Sync form when initialValues change (e.g. user clicks Edit on a different note)
+  // Sync form when initialValues change (e.g. user clicks Edit on a different note).
+  // setState calls inside this effect are intentional: we want to re-initialise all
+  // form fields synchronously when the controlled `initialValues` prop changes.
   useEffect(() => {
     if (initialValues) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPageNumber(initialValues.pageNumber ?? currentPage ?? 1);
       setTitle(initialValues.title ?? "");
       setContent(initialValues.content ?? "");

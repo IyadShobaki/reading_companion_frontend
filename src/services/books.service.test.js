@@ -6,7 +6,8 @@
  *   2. booksService — async functions, fetch is mocked
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+/* global global */
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { mapBookVolume, booksService } from "./books.service";
 
 // ---------------------------------------------------------------------------

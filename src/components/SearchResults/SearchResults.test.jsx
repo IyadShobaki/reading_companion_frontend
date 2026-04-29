@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, waitFor, act } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import SearchResults from "./SearchResults";
 import { booksService } from "../../services/books.service";

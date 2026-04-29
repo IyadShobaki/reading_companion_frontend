@@ -75,8 +75,9 @@ export function useGoogleBooksViewer({
     // No book selected
     if (!googleBookId) return;
 
-    // Book exists but cannot be read in-app
+    // Book exists but cannot be read in-app.
     if (!embeddable || viewability === "NO_PAGES") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setViewerState("unavailable");
       return;
     }

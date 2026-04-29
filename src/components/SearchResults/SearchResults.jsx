@@ -42,8 +42,9 @@ function SearchResults({
   useEffect(() => {
     const trimmed = debouncedQuery.trim();
 
-    // Nothing to fetch if the query is empty
+    // Nothing to fetch if the query is empty.
     if (!trimmed) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setBooks([]);
       setError(null);
       setIsLoading(false);
