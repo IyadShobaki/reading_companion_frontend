@@ -20,10 +20,14 @@ function SideBar({ onLogout, onOpenUpdateModal }) {
         />
       </div>
       <div className="sidebar__actions">
-        <button className="sidebar__btn" onClick={onOpenUpdateModal}>
+        <button
+          type="button"
+          className="sidebar__btn"
+          onClick={onOpenUpdateModal}
+        >
           Change profile data
         </button>
-        <button className="sidebar__btn" onClick={onLogout}>
+        <button type="button" className="sidebar__btn" onClick={onLogout}>
           Log out
         </button>
       </div>

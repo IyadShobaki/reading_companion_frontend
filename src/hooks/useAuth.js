@@ -118,7 +118,6 @@ export const useAuth = () => {
     } catch (err) {
       const errorMsg = err.message || "Failed to update profile";
       setError(errorMsg);
-      console.error("Update profile error:", err);
       throw err;
     } finally {
       setIsLoading(false);
