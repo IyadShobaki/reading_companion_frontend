@@ -1,8 +1,9 @@
 /**
- * Header.test.jsx — Unit tests for the Header component's search behavior.
+ * Header.test.jsx — Unit tests for the Header component.
  *
- * Auth buttons and nav-toggle behavior are integration concerns; here we
- * focus on the search form — the new logic added in Step 4.
+ * Covers:
+ *   - Guest vs authenticated conditional nav items
+ *   - Search form behaviour
  */
 
 import { describe, it, expect, vi } from "vitest";
@@ -11,6 +12,12 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import Header from "./Header";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
+
+// ---------------------------------------------------------------------------
+// Fixtures
+// ---------------------------------------------------------------------------
+
+const MOCK_USER = { _id: "u1", name: "Ada", email: "ada@example.com" };
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -22,9 +29,13 @@ function LocationDisplay() {
   return <span data-testid="location">{loc.pathname + loc.search}</span>;
 }
 
-const renderHeader = (props = {}) =>
+const renderHeader = ({
+  currentUser = null,
+  isLoggedIn = false,
+  ...rest
+} = {}) =>
   render(
-    <CurrentUserContext.Provider value={{ currentUser: null }}>
+    <CurrentUserContext.Provider value={{ currentUser }}>
       <MemoryRouter initialEntries={["/"]}>
         <Routes>
           <Route
@@ -34,8 +45,8 @@ const renderHeader = (props = {}) =>
                 <Header
                   handleLoginClick={vi.fn()}
                   handleRegisterClick={vi.fn()}
-                  isLoggedIn={false}
-                  {...props}
+                  isLoggedIn={isLoggedIn}
+                  {...rest}
                 />
                 <LocationDisplay />
               </>
@@ -49,6 +60,55 @@ const renderHeader = (props = {}) =>
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
+
+describe("Header — guest vs authenticated nav", () => {
+  // ── Guest ─────────────────────────────────────────────────────────────────
+
+  it("shows Sign up and Log in buttons when the user is not logged in", () => {
+    renderHeader({ isLoggedIn: false });
+    expect(
+      screen.getByRole("button", { name: /sign up/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /log in/i })).toBeInTheDocument();
+  });
+
+  it("does not show My Library link for guests", () => {
+    renderHeader({ isLoggedIn: false });
+    expect(
+      screen.queryByRole("link", { name: /my library/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not show a profile link for guests", () => {
+    renderHeader({ isLoggedIn: false });
+    // The profile area contains the username text — it should not be present
+    expect(screen.queryByText("Ada")).not.toBeInTheDocument();
+  });
+
+  // ── Authenticated ─────────────────────────────────────────────────────────
+
+  it("shows My Library link when the user is logged in", () => {
+    renderHeader({ currentUser: MOCK_USER, isLoggedIn: true });
+    expect(
+      screen.getByRole("link", { name: /my library/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows the username in the nav when the user is logged in", () => {
+    renderHeader({ currentUser: MOCK_USER, isLoggedIn: true });
+    expect(screen.getByText("Ada")).toBeInTheDocument();
+  });
+
+  it("does not show Sign up or Log in buttons when logged in", () => {
+    renderHeader({ currentUser: MOCK_USER, isLoggedIn: true });
+    expect(
+      screen.queryByRole("button", { name: /sign up/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /log in/i }),
+    ).not.toBeInTheDocument();
+  });
+});
 
 describe("Header search", () => {
   it("renders the search input", () => {
