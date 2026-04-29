@@ -1,0 +1,94 @@
+/* ── NoteCard ─────────────────────────────────────────────────────────────── */
+
+.note-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--color-black-20);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+}
+
+.note-card_editing {
+  border-color: var(--color-black-40);
+}
+
+/* ── Header row: page badge + title + action buttons ─── */
+
+.note-card__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.note-card__page {
+  flex-shrink: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-black-60);
+  white-space: nowrap;
+}
+
+.note-card__title {
+  flex: 1;
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.3;
+}
+
+.note-card__actions {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.note-card__btn {
+  border: none;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  background: none;
+  color: var(--color-black-60);
+  font-family: inherit;
+}
+
+.note-card__btn:hover {
+  color: var(--color-black);
+}
+
+.note-card__btn_danger:hover {
+  color: var(--color-error);
+}
+
+/* ── Content ─────────────────────────────────────────── */
+
+.note-card__content {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--color-black);
+}
+
+/* ── Expand/collapse toggle ──────────────────────────── */
+
+.note-card__toggle {
+  align-self: flex-start;
+  border: none;
+  padding: 0;
+  background: none;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  color: var(--color-black-60);
+  font-family: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

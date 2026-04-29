@@ -1,0 +1,98 @@
+/* ── NoteForm ─────────────────────────────────────────────────────────────── */
+
+.note-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Row containing page + title inputs side by side */
+.note-form__row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+/* Label wraps its input — provides accessible pairing */
+.note-form__label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-black-60);
+}
+
+/* Title label should expand to fill available space */
+.note-form__label_grow {
+  flex: 1;
+}
+
+/* Shared base for text inputs */
+.note-form__input {
+  border: 1px solid var(--color-black-30);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  background: var(--color-white);
+  color: var(--color-black);
+}
+
+/* Narrow width for page number */
+.note-form__input_page {
+  width: 64px;
+}
+
+.note-form__textarea {
+  border: 1px solid var(--color-black-30);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  resize: vertical;
+  background: var(--color-white);
+  color: var(--color-black);
+}
+
+.note-form__textarea_error {
+  border-color: var(--color-error);
+}
+
+.note-form__error {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+}
+
+/* Action row */
+.note-form__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.note-form__btn {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 16px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.note-form__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.note-form__btn_primary {
+  background-color: var(--color-black);
+  color: var(--color-white);
+}
+
+.note-form__btn_secondary {
+  background-color: transparent;
+  color: var(--color-black);
+  border: 1px solid var(--color-black-30);
+}

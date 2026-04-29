@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import Loading from "../Loading/Loading";
+import NotesPanel from "../NotesPanel/NotesPanel";
 import { booksService } from "../../services/books.service";
 import { progressStorage } from "../../utils/progressStorage";
 import "./Reader.css";
@@ -278,11 +279,7 @@ function Reader() {
             <h2 className="reader__panel-heading" id="reader-notes-heading">
               Notes
             </h2>
-            <div className="reader__panel-body">
-              <p className="reader__panel-placeholder">
-                Your notes will appear here.
-              </p>
-            </div>
+            <NotesPanel googleBookId={googleBookId} currentPage={pageNumber} />
           </section>
 
           <section
