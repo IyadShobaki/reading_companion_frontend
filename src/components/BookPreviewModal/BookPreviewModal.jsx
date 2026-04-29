@@ -21,6 +21,7 @@
  */
 
 import { useNavigate } from "react-router-dom";
+import { progressStorage } from "../../utils/progressStorage";
 import "./BookPreviewModal.css";
 
 const noop = () => {};
@@ -62,6 +63,10 @@ function BookPreviewModal({
 
   const authorText = authors.length > 0 ? authors.join(", ") : "Unknown Author";
   const isAccessible = embeddable && viewability !== "NO_PAGES";
+
+  // Show "Continue Reading" when saved progress exists for this book
+  const hasProgress = progressStorage.loadProgress(googleBookId) !== null;
+  const readingLabel = hasProgress ? "Continue Reading" : "Start Reading";
 
   const handleStartReading = () => {
     onClose();
@@ -146,9 +151,9 @@ function BookPreviewModal({
                 type="button"
                 className="book-preview-modal__btn book-preview-modal__btn_primary"
                 onClick={handleStartReading}
-                aria-label={`Start reading ${title}`}
+                aria-label={`${readingLabel} ${title}`}
               >
-                Start Reading
+                {readingLabel}
               </button>
 
               {isLoggedIn && (

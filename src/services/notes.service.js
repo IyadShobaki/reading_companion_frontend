@@ -22,7 +22,10 @@ export const notesService = {
    * @returns {Promise<Object[]>} Array of note objects.
    */
   async getByBook(googleBookId) {
-    return apiClient.get(`/notes/${encodeURIComponent(googleBookId)}`);
+    const res = await apiClient.get(
+      `/notes/${encodeURIComponent(googleBookId)}`,
+    );
+    return res.data ?? [];
   },
 
   /**
@@ -31,7 +34,8 @@ export const notesService = {
    * @returns {Promise<Object>} The saved note object from the server.
    */
   async create(note) {
-    return apiClient.post("/notes", note);
+    const res = await apiClient.post("/notes", note);
+    return res.data;
   },
 
   /**
@@ -41,15 +45,19 @@ export const notesService = {
    * @returns {Promise<Object>} The updated note object from the server.
    */
   async update(noteId, changes) {
-    return apiClient.patch(`/notes/${encodeURIComponent(noteId)}`, changes);
+    const res = await apiClient.patch(
+      `/notes/${encodeURIComponent(noteId)}`,
+      changes,
+    );
+    return res.data;
   },
 
   /**
    * Delete a note by ID.
    * @param {string} noteId - The note's _id.
-   * @returns {Promise<Object>} Server confirmation.
+   * @returns {Promise<void>}
    */
   async remove(noteId) {
-    return apiClient.delete(`/notes/${encodeURIComponent(noteId)}`);
+    await apiClient.delete(`/notes/${encodeURIComponent(noteId)}`);
   },
 };

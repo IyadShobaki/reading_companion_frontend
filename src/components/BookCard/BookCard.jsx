@@ -18,6 +18,7 @@
  */
 
 import { useNavigate } from "react-router-dom";
+import { progressStorage } from "../../utils/progressStorage";
 import "./BookCard.css";
 
 // Module-scope no-op default so prop defaults stay stable across renders
@@ -41,6 +42,10 @@ function BookCard({
 
   // A book is considered accessible when it can be embedded AND has pages
   const isAccessible = embeddable && viewability !== "NO_PAGES";
+
+  // Show "Continue Reading" when saved progress exists for this book
+  const hasProgress = progressStorage.loadProgress(googleBookId) !== null;
+  const readingLabel = hasProgress ? "Continue Reading" : "Start Reading";
 
   const handleStartReading = () => {
     navigate(`/reader/${encodeURIComponent(googleBookId)}`);
@@ -92,9 +97,9 @@ function BookCard({
             type="button"
             className="book-card__btn book-card__btn_primary"
             onClick={handleStartReading}
-            aria-label={`Start reading ${title}`}
+            aria-label={`${readingLabel} ${title}`}
           >
-            Start Reading
+            {readingLabel}
           </button>
 
           {isLoggedIn && (

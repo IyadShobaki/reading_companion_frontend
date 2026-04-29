@@ -39,6 +39,13 @@ const MOCK_BOOK = {
   viewability: "PARTIAL",
 };
 
+// Backend representation — array fields are comma-joined strings
+const MOCK_BOOK_BACKEND = {
+  ...MOCK_BOOK,
+  authors: "Robert C. Martin",
+  categories: "",
+};
+
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
@@ -52,10 +59,12 @@ describe("libraryService", () => {
 
   describe("getAll", () => {
     it("calls GET /library", async () => {
-      mockApiClient.get.mockResolvedValue({ data: [MOCK_BOOK] });
+      // Backend returns comma-joined strings; service normalises back to arrays
+      mockApiClient.get.mockResolvedValue({ data: [MOCK_BOOK_BACKEND] });
       const result = await libraryService.getAll();
       expect(mockApiClient.get).toHaveBeenCalledWith("/library");
-      expect(result).toEqual([MOCK_BOOK]);
+      // normalizeFromBackend converts strings → arrays
+      expect(result).toEqual([{ ...MOCK_BOOK, categories: [] }]);
     });
   });
 
@@ -65,7 +74,11 @@ describe("libraryService", () => {
     it("calls POST /library with the full book object", async () => {
       mockApiClient.post.mockResolvedValue({ data: MOCK_BOOK });
       const result = await libraryService.add(MOCK_BOOK);
-      expect(mockApiClient.post).toHaveBeenCalledWith("/library", MOCK_BOOK);
+      // normalizeForBackend converts array fields to comma-joined strings
+      expect(mockApiClient.post).toHaveBeenCalledWith(
+        "/library",
+        MOCK_BOOK_BACKEND,
+      );
       expect(result).toEqual(MOCK_BOOK);
     });
   });

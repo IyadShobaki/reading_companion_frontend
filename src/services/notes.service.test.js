@@ -56,14 +56,14 @@ describe("notesService", () => {
 
   describe("getByBook", () => {
     it("calls GET /notes/:googleBookId", async () => {
-      mockApiClient.get.mockResolvedValue([MOCK_NOTE]);
+      mockApiClient.get.mockResolvedValue({ data: [MOCK_NOTE] });
       const result = await notesService.getByBook("abc123");
       expect(mockApiClient.get).toHaveBeenCalledWith("/notes/abc123");
       expect(result).toEqual([MOCK_NOTE]);
     });
 
     it("encodes special characters in the googleBookId", async () => {
-      mockApiClient.get.mockResolvedValue([]);
+      mockApiClient.get.mockResolvedValue({ data: [] });
       await notesService.getByBook("id with spaces");
       expect(mockApiClient.get).toHaveBeenCalledWith(
         "/notes/id%20with%20spaces",
@@ -75,7 +75,7 @@ describe("notesService", () => {
 
   describe("create", () => {
     it("calls POST /notes with the full note payload", async () => {
-      mockApiClient.post.mockResolvedValue(MOCK_NOTE);
+      mockApiClient.post.mockResolvedValue({ data: MOCK_NOTE });
       const noteData = {
         googleBookId: "abc123",
         pageNumber: 42,
@@ -93,7 +93,7 @@ describe("notesService", () => {
   describe("update", () => {
     it("calls PATCH /notes/:noteId with the changes", async () => {
       const updated = { ...MOCK_NOTE, content: "Revised content." };
-      mockApiClient.patch.mockResolvedValue(updated);
+      mockApiClient.patch.mockResolvedValue({ data: updated });
       const result = await notesService.update("note1", {
         content: "Revised content.",
       });
@@ -104,7 +104,7 @@ describe("notesService", () => {
     });
 
     it("encodes special characters in the noteId", async () => {
-      mockApiClient.patch.mockResolvedValue({});
+      mockApiClient.patch.mockResolvedValue({ data: {} });
       await notesService.update("note/with/slashes", { content: "x" });
       expect(mockApiClient.patch).toHaveBeenCalledWith(
         "/notes/note%2Fwith%2Fslashes",

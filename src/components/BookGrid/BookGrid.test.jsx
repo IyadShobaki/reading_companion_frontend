@@ -8,6 +8,11 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import BookGrid from "./BookGrid";
 
+// progressStorage is used by BookCard — mock so tests aren't localStorage-dependent
+vi.mock("../../utils/progressStorage", () => ({
+  progressStorage: { loadProgress: vi.fn(() => null) },
+}));
+
 // ---------------------------------------------------------------------------
 // Fixtures
 // ---------------------------------------------------------------------------

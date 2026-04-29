@@ -2,11 +2,21 @@
  * BookCard.test.jsx — Unit tests for the BookCard component
  */
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import BookCard from "./BookCard";
+
+// ---------------------------------------------------------------------------
+// Mock progressStorage so tests control the "has progress" state
+// ---------------------------------------------------------------------------
+
+const mockLoadProgress = vi.hoisted(() => vi.fn(() => null));
+
+vi.mock("../../utils/progressStorage", () => ({
+  progressStorage: { loadProgress: mockLoadProgress },
+}));
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -66,6 +76,10 @@ const renderCard = (props = {}) =>
 // ---------------------------------------------------------------------------
 
 describe("BookCard", () => {
+  beforeEach(() => {
+    mockLoadProgress.mockReturnValue(null); // no progress by default
+  });
+
   // ---- Metadata rendering --------------------------------------------------
 
   it("renders the book title", () => {
@@ -111,16 +125,26 @@ describe("BookCard", () => {
     expect(screen.getByText("Limited Access")).toBeInTheDocument();
   });
 
-  // ---- Start Reading button ------------------------------------------------
+  // ---- Start Reading / Continue Reading button ----------------------------
 
-  it("renders a 'Start Reading' button", () => {
+  it("renders a 'Start Reading' button when no progress is saved", () => {
+    mockLoadProgress.mockReturnValue(null);
     renderCard();
     expect(
       screen.getByRole("button", { name: /start reading clean code/i }),
     ).toBeInTheDocument();
   });
 
-  it("renders the 'Start Reading' button for non-embeddable books too", () => {
+  it("renders 'Continue Reading' when progress is saved for the book", () => {
+    mockLoadProgress.mockReturnValue(5); // page 5 saved
+    renderCard();
+    expect(
+      screen.getByRole("button", { name: /continue reading clean code/i }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Start Reading")).not.toBeInTheDocument();
+  });
+
+  it("renders the reading button for non-embeddable books too", () => {
     renderCard({ book: LIMITED_BOOK });
     expect(
       screen.getByRole("button", { name: /start reading/i }),

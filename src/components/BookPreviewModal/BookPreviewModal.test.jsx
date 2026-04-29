@@ -8,6 +8,11 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import BookPreviewModal from "./BookPreviewModal";
 
+// progressStorage is used by BookPreviewModal — mock so tests aren't localStorage-dependent
+vi.mock("../../utils/progressStorage", () => ({
+  progressStorage: { loadProgress: vi.fn(() => null) },
+}));
+
 // ---------------------------------------------------------------------------
 // Fixtures
 // ---------------------------------------------------------------------------
