@@ -13,6 +13,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import Reader from "./Reader";
 import { booksService } from "../../services/books.service";
 import { progressStorage } from "../../utils/progressStorage";
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
 // ---------------------------------------------------------------------------
 // Module mock
@@ -31,6 +32,15 @@ vi.mock("../../utils/progressStorage", () => ({
     clearProgress: vi.fn(),
   },
 }));
+
+vi.mock("../../services/progress.service", () => ({
+  progressService: {
+    getProgress: vi.fn(),
+    saveProgress: vi.fn(),
+  },
+}));
+
+import { progressService } from "../../services/progress.service";
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -52,6 +62,12 @@ const MOCK_BOOK = {
 };
 
 // ---------------------------------------------------------------------------
+// Fixtures (continued)
+// ---------------------------------------------------------------------------
+
+const MOCK_USER = { _id: "user1", name: "Test User", email: "test@test.com" };
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -63,6 +79,19 @@ const renderAt = (bookId = "") =>
         <Route path="/reader" element={<Reader />} />
       </Routes>
     </MemoryRouter>,
+  );
+
+/** Renders Reader as an authenticated user. */
+const renderAtAsUser = (bookId = "") =>
+  render(
+    <CurrentUserContext.Provider value={{ currentUser: MOCK_USER }}>
+      <MemoryRouter initialEntries={[`/reader/${bookId}`]}>
+        <Routes>
+          <Route path="/reader/:bookId" element={<Reader />} />
+          <Route path="/reader" element={<Reader />} />
+        </Routes>
+      </MemoryRouter>
+    </CurrentUserContext.Provider>,
   );
 
 const renderNoBook = () =>
@@ -357,5 +386,31 @@ describe("Reader", () => {
     expect(
       screen.getByRole("button", { name: /save progress/i }),
     ).toBeInTheDocument();
+  });
+
+  // -- Authenticated: progress API ------------------------------------------
+
+  it("loads progress from the backend for authenticated users", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    progressService.getProgress.mockResolvedValue(12);
+    renderAtAsUser("abc123");
+    await act(() => vi.runAllTimersAsync());
+    expect(progressService.getProgress).toHaveBeenCalledWith("abc123");
+    expect(screen.getByText("Page 12")).toBeInTheDocument();
+  });
+
+  it("saves progress to the backend for authenticated users", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    progressService.getProgress.mockResolvedValue(null);
+    progressService.saveProgress.mockResolvedValue({
+      googleBookId: "abc123",
+      pageNumber: 1,
+    });
+    renderAtAsUser("abc123");
+    await act(() => vi.runAllTimersAsync());
+    await userEvent.click(
+      screen.getByRole("button", { name: /save progress/i }),
+    );
+    expect(progressService.saveProgress).toHaveBeenCalledWith("abc123", 1);
   });
 });

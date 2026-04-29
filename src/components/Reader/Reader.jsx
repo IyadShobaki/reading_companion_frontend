@@ -5,7 +5,7 @@ import Loading from "../Loading/Loading";
 import NotesPanel from "../NotesPanel/NotesPanel";
 import AiPanel from "../AiPanel/AiPanel";
 import { booksService } from "../../services/books.service";
-import { progressStorage } from "../../utils/progressStorage";
+import { useProgress } from "../../hooks/useProgress";
 import "./Reader.css";
 
 /**
@@ -32,6 +32,8 @@ import "./Reader.css";
 function Reader() {
   const { bookId } = useParams();
 
+  const { loadProgress, saveProgress } = useProgress();
+
   const [book, setBook] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -52,11 +54,11 @@ function Reader() {
 
     booksService
       .getById(decodeURIComponent(bookId))
-      .then((data) => {
+      .then(async (data) => {
         if (!cancelled) {
           setBook(data);
           // Resume reading — restore last saved page if one exists
-          const savedPage = progressStorage.loadProgress(data.googleBookId);
+          const savedPage = await loadProgress(data.googleBookId);
           if (savedPage) setPageNumber(savedPage);
           setIsLoading(false);
         }
@@ -71,7 +73,7 @@ function Reader() {
     return () => {
       cancelled = true;
     };
-  }, [bookId]);
+  }, [bookId, loadProgress]);
 
   const handleNext = () => {
     setPageNumber((p) => p + 1);
@@ -138,8 +140,8 @@ function Reader() {
 
   const isReadable = embeddable && viewability !== "NO_PAGES";
 
-  const handleSaveProgress = () => {
-    progressStorage.saveProgress(googleBookId, pageNumber);
+  const handleSaveProgress = async () => {
+    await saveProgress(googleBookId, pageNumber);
     setIsSaved(true);
   };
 
