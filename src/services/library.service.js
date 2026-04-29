@@ -18,11 +18,13 @@ const apiClient = new ApiClient(import.meta.env.VITE_API_BASE_URL ?? "");
 export const libraryService = {
   /**
    * Fetch all books saved in the current user's library.
+   * Unwraps the `{ data: [...] }` envelope returned by the backend.
    *
    * @returns {Promise<Object[]>} Array of saved book objects
    */
   async getAll() {
-    return apiClient.get("/library");
+    const res = await apiClient.get("/library");
+    return res.data;
   },
 
   /**
@@ -35,7 +37,8 @@ export const libraryService = {
    * @returns {Promise<Object>} The newly saved book document
    */
   async add(book) {
-    return apiClient.post("/library", book);
+    const res = await apiClient.post("/library", book);
+    return res.data;
   },
 
   /**
@@ -45,6 +48,7 @@ export const libraryService = {
    * @returns {Promise<Object>} The deleted book document
    */
   async remove(googleBookId) {
-    return apiClient.delete(`/library/${encodeURIComponent(googleBookId)}`);
+    // DELETE /library/:id returns 204 No Content — no JSON body to parse.
+    await apiClient.delete(`/library/${encodeURIComponent(googleBookId)}`);
   },
 };

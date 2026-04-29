@@ -68,7 +68,10 @@ class ApiClient {
       throw error;
     }
 
-    // Parse and return JSON response
+    // Parse and return JSON response (204 No Content has no body)
+    if (response.status === 204) {
+      return null;
+    }
     return response.json();
   }
 

@@ -52,7 +52,7 @@ describe("libraryService", () => {
 
   describe("getAll", () => {
     it("calls GET /library", async () => {
-      mockApiClient.get.mockResolvedValue([MOCK_BOOK]);
+      mockApiClient.get.mockResolvedValue({ data: [MOCK_BOOK] });
       const result = await libraryService.getAll();
       expect(mockApiClient.get).toHaveBeenCalledWith("/library");
       expect(result).toEqual([MOCK_BOOK]);
@@ -63,7 +63,7 @@ describe("libraryService", () => {
 
   describe("add", () => {
     it("calls POST /library with the full book object", async () => {
-      mockApiClient.post.mockResolvedValue(MOCK_BOOK);
+      mockApiClient.post.mockResolvedValue({ data: MOCK_BOOK });
       const result = await libraryService.add(MOCK_BOOK);
       expect(mockApiClient.post).toHaveBeenCalledWith("/library", MOCK_BOOK);
       expect(result).toEqual(MOCK_BOOK);
@@ -74,13 +74,13 @@ describe("libraryService", () => {
 
   describe("remove", () => {
     it("calls DELETE /library/:googleBookId (encoded)", async () => {
-      mockApiClient.delete.mockResolvedValue({ googleBookId: "abc123" });
+      mockApiClient.delete.mockResolvedValue(null);
       await libraryService.remove("abc123");
       expect(mockApiClient.delete).toHaveBeenCalledWith("/library/abc123");
     });
 
     it("encodes special characters in the googleBookId", async () => {
-      mockApiClient.delete.mockResolvedValue({});
+      mockApiClient.delete.mockResolvedValue(null);
       await libraryService.remove("id with spaces");
       expect(mockApiClient.delete).toHaveBeenCalledWith(
         "/library/id%20with%20spaces",
