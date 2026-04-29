@@ -111,7 +111,8 @@ describe("useProgress", () => {
   // ── Authenticated user ────────────────────────────────────────────────────
 
   describe("authenticated user", () => {
-    it("loadProgress fetches from the backend", async () => {
+    it("loadProgress fetches from the backend when localStorage has progress", async () => {
+      progressStorage.loadProgress.mockReturnValue(5);
       progressService.getProgress.mockResolvedValue(8);
       const { result } = renderHook(() => useProgress(), {
         wrapper: authWrapper,
@@ -126,7 +127,23 @@ describe("useProgress", () => {
       expect(page).toBe(8);
     });
 
+    it("does not call the backend when localStorage has no entry", async () => {
+      progressStorage.loadProgress.mockReturnValue(null);
+      const { result } = renderHook(() => useProgress(), {
+        wrapper: authWrapper,
+      });
+
+      let page;
+      await act(async () => {
+        page = await result.current.loadProgress("abc123");
+      });
+
+      expect(progressService.getProgress).not.toHaveBeenCalled();
+      expect(page).toBeNull();
+    });
+
     it("loadProgress mirrors the backend result to localStorage", async () => {
+      progressStorage.loadProgress.mockReturnValue(5);
       progressService.getProgress.mockResolvedValue(8);
       const { result } = renderHook(() => useProgress(), {
         wrapper: authWrapper,

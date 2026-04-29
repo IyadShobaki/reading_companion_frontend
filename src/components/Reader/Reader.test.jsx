@@ -392,11 +392,21 @@ describe("Reader", () => {
 
   it("loads progress from the backend for authenticated users", async () => {
     booksService.getById.mockResolvedValue(MOCK_BOOK);
+    progressStorage.loadProgress.mockReturnValue(5);
     progressService.getProgress.mockResolvedValue(12);
     renderAtAsUser("abc123");
     await act(() => vi.runAllTimersAsync());
     expect(progressService.getProgress).toHaveBeenCalledWith("abc123");
     expect(screen.getByText("Page 12")).toBeInTheDocument();
+  });
+
+  it("does not call the progress API when authenticated user has no local progress", async () => {
+    booksService.getById.mockResolvedValue(MOCK_BOOK);
+    progressStorage.loadProgress.mockReturnValue(null);
+    renderAtAsUser("abc123");
+    await act(() => vi.runAllTimersAsync());
+    expect(progressService.getProgress).not.toHaveBeenCalled();
+    expect(screen.getByText("Page 1")).toBeInTheDocument();
   });
 
   it("saves progress to the backend for authenticated users", async () => {

@@ -22,9 +22,16 @@ export function useProgress() {
   /**
    * Load the saved page number for a book.
    *
-   * Auth users: fetches from the backend and mirrors the result to
-   * localStorage. Falls back to localStorage when no backend record exists
-   * or on a non-fatal API error.
+   * Auth users: checks localStorage first. If localStorage has no entry the
+   * book is new on this device — the backend call is skipped to avoid a
+   * spurious 404. If localStorage has a value, the backend is queried so the
+   * latest page (e.g. saved from another session) is returned and mirrored
+   * back to localStorage. Falls back to the local value on API error.
+   *
+   * Guest users: reads from localStorage only.
+   *
+   * Cross-device sync is preserved because every backend save always mirrors
+   * the result to localStorage on the current device.
    *
    * @param {string} googleBookId
    * @returns {Promise<number|null>}
@@ -32,17 +39,24 @@ export function useProgress() {
   const loadProgress = useCallback(
     async (googleBookId) => {
       if (isLoggedIn) {
-        try {
-          const page = await progressService.getProgress(googleBookId);
-          if (page !== null) {
-            // Mirror to localStorage so BookCard / BookPreviewModal can read
-            // the value synchronously during render.
-            progressStorage.saveProgress(googleBookId, page);
-            return page;
+        // Only call the backend when localStorage already holds progress for
+        // this book. A null entry means the book is new here — skip the
+        // backend to avoid a needless 404 ("Start Reading", not "Continue").
+        const localPage = progressStorage.loadProgress(googleBookId);
+        if (localPage !== null) {
+          try {
+            const page = await progressService.getProgress(googleBookId);
+            if (page !== null) {
+              // Mirror latest backend page to localStorage.
+              progressStorage.saveProgress(googleBookId, page);
+              return page;
+            }
+          } catch {
+            // Fall back to local value on unexpected API error.
           }
-        } catch {
-          // Fall back to localStorage on unexpected API error.
+          return localPage;
         }
+        return null;
       }
       return progressStorage.loadProgress(googleBookId);
     },
