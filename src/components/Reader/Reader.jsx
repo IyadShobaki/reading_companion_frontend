@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 
 import Loading from "../Loading/Loading";
 import NotesPanel from "../NotesPanel/NotesPanel";
+import AiPanel from "../AiPanel/AiPanel";
 import { booksService } from "../../services/books.service";
 import { progressStorage } from "../../utils/progressStorage";
 import "./Reader.css";
@@ -289,11 +290,11 @@ function Reader() {
             <h2 className="reader__panel-heading" id="reader-ai-heading">
               AI Assistant
             </h2>
-            <div className="reader__panel-body">
-              <p className="reader__panel-placeholder">
-                AI tools will appear here.
-              </p>
-            </div>
+            <AiPanel
+              googleBookId={googleBookId}
+              title={title}
+              currentPage={pageNumber}
+            />
           </section>
         </aside>
       </div>
