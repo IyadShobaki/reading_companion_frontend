@@ -11,6 +11,7 @@
 
 import { useState, useEffect } from "react";
 import { booksService } from "../services/books.service";
+import { getCached, setCached } from "../utils/bookCache";
 
 export function useBookSection(sectionKey) {
   const [books, setBooks] = useState([]);
@@ -21,16 +22,33 @@ export function useBookSection(sectionKey) {
     // Cancellation flag — prevents state updates on an unmounted component
     let cancelled = false;
 
+    const cacheKey = `rc_books_${sectionKey}`;
+    const cached = getCached(cacheKey);
+
+    // Cache hit: populate from localStorage without a network request.
+    if (cached) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setBooks(cached);
+      setIsLoading(false);
+      setError(null);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    // Cache miss or expired: fetch from the network.
     // Canonical async data-fetching pattern: set loading flag synchronously
     // before the async call so the UI reflects the in-flight state.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     setError(null);
 
     booksService
       .fetchSection(sectionKey)
       .then((data) => {
-        if (!cancelled) setBooks(data);
+        if (!cancelled) {
+          setCached(cacheKey, data);
+          setBooks(data);
+        }
       })
       .catch((err) => {
         if (!cancelled) setError(err.message || "Failed to load books.");

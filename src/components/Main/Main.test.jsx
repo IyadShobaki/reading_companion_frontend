@@ -40,6 +40,8 @@ describe("Main", () => {
   beforeEach(() => {
     // Default: each section resolves immediately with no books
     booksService.fetchSection.mockResolvedValue([]);
+    // Clear bookCache localStorage entries so tests don't bleed into each other
+    localStorage.clear();
   });
 
   afterEach(() => {

@@ -6,12 +6,21 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useBookSection } from "./useBookSection";
 import { booksService } from "../services/books.service";
+import { getCached, setCached } from "../utils/bookCache";
 
 // Mock the entire books service module; booksService.fetchSection becomes a spy
 vi.mock("../services/books.service", () => ({
   booksService: {
     fetchSection: vi.fn(),
   },
+}));
+
+// Mock bookCache so tests control cache hits/misses and can inspect setCached calls
+vi.mock("../utils/bookCache", () => ({
+  getCached: vi.fn(),
+  setCached: vi.fn(),
+  clearCached: vi.fn(),
+  CACHE_TTL_MS: 86400000,
 }));
 
 // ---------------------------------------------------------------------------
@@ -40,6 +49,8 @@ const MOCK_BOOK = {
 describe("useBookSection", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    // Default to a cache miss so existing fetch-focused tests are unaffected
+    getCached.mockReturnValue(null);
   });
 
   it("starts in loading state with empty books and no error", () => {
@@ -123,5 +134,68 @@ describe("useBookSection", () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(booksService.fetchSection).toHaveBeenCalledWith("new");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Cache behaviour
+// ---------------------------------------------------------------------------
+
+describe("useBookSection — cache behaviour", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  it("uses cached data and never calls fetchSection when the cache is valid", async () => {
+    getCached.mockReturnValue([MOCK_BOOK]);
+
+    const { result } = renderHook(() => useBookSection("trending"));
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.books).toEqual([MOCK_BOOK]);
+    expect(booksService.fetchSection).not.toHaveBeenCalled();
+  });
+
+  it("returns no error when populating books from the cache", async () => {
+    getCached.mockReturnValue([MOCK_BOOK]);
+
+    const { result } = renderHook(() => useBookSection("trending"));
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.error).toBeNull();
+  });
+
+  it("calls fetchSection when getCached returns null (cache miss or expired)", async () => {
+    getCached.mockReturnValue(null);
+    booksService.fetchSection.mockResolvedValue([MOCK_BOOK]);
+
+    renderHook(() => useBookSection("philosophy"));
+
+    await waitFor(() =>
+      expect(booksService.fetchSection).toHaveBeenCalledWith("philosophy"),
+    );
+  });
+
+  it("writes to cache with the correct key after a successful fetch", async () => {
+    getCached.mockReturnValue(null);
+    booksService.fetchSection.mockResolvedValue([MOCK_BOOK]);
+
+    renderHook(() => useBookSection("romance"));
+
+    await waitFor(() =>
+      expect(setCached).toHaveBeenCalledWith("rc_books_romance", [MOCK_BOOK]),
+    );
+  });
+
+  it("sets error state and does not write to cache when the fetch fails", async () => {
+    getCached.mockReturnValue(null);
+    booksService.fetchSection.mockRejectedValue(new Error("Network error"));
+
+    const { result } = renderHook(() => useBookSection("technology"));
+
+    await waitFor(() => expect(result.current.error).toBe("Network error"));
+    expect(setCached).not.toHaveBeenCalled();
   });
 });

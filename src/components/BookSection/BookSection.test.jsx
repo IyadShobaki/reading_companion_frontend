@@ -57,6 +57,8 @@ const renderSection = (props = {}) =>
 describe("BookSection", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    // Clear bookCache localStorage entries so tests don't bleed into each other
+    localStorage.clear();
   });
 
   it("renders the section heading", async () => {
