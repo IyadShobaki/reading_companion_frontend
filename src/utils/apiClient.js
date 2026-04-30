@@ -62,7 +62,9 @@ class ApiClient {
     if (!response.ok) {
       const body = await response.json().catch(() => ({}));
       const message = body.message || `Error: ${response.status}`;
-      console.error(`[API Error] ${response.status}: ${message}`);
+      if (import.meta.env.DEV) {
+        console.error(`[API Error] ${response.status}: ${message}`);
+      }
       const error = new Error(message);
       error.status = response.status;
       throw error;
