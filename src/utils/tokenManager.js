@@ -33,12 +33,4 @@ export const tokenManager = {
   remove() {
     localStorage.removeItem("jwt");
   },
-
-  /**
-   * Check if a JWT token exists in localStorage
-   * @returns {boolean} True if a token exists, false otherwise
-   */
-  exists() {
-    return !!this.get();
-  },
 };

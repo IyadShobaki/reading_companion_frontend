@@ -2,6 +2,37 @@ import "./RegisterModal.css";
 import ModalWithForm from "../ModalWithForm/ModalWithForm";
 import { useFormWithValidation } from "../../hooks/useFormWithValidation";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Validation rules for registration fields. Module-scope so the reference is stable.
+const REGISTER_VALIDATORS = {
+  name: (v) => {
+    if (!v || v.trim().length === 0) return "Name is required.";
+    if (v.length > 30) return "Name must be 30 characters or less.";
+    return "";
+  },
+  email: (v) => {
+    if (!v || v.trim().length === 0) return "Email is required.";
+    if (!EMAIL_REGEX.test(v)) return "Please enter a valid email.";
+    return "";
+  },
+  password: (v) => {
+    if (!v || v.trim().length === 0) return "Password is required.";
+    if (v.length < 6) return "Password must be at least 6 characters.";
+    return "";
+  },
+  avatar: (v) => {
+    if (v && v.trim().length > 0) {
+      try {
+        new URL(v);
+      } catch {
+        return "Please enter a valid URL.";
+      }
+    }
+    return "";
+  },
+};
+
 // Registration dialog. Avatar is optional — passed in optionalFields so an
 // empty value does not block form submission. Server errors come via the
 // `serverError` prop from useAuth.
@@ -21,7 +52,7 @@ function RegisterModal({
   };
 
   const { values, errors, isValid, handleChange, resetForm } =
-    useFormWithValidation(defaultValues, ["avatar"]);
+    useFormWithValidation(defaultValues, ["avatar"], REGISTER_VALIDATORS);
 
   const handleSubmit = async () => {
     if (!isValid) return;

@@ -41,15 +41,4 @@ describe("tokenManager", () => {
     tokenManager.remove();
     expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
   });
-
-  // ── exists ────────────────────────────────────────────────────────────────
-
-  it("exists returns false when no token is stored", () => {
-    expect(tokenManager.exists()).toBe(false);
-  });
-
-  it("exists returns true when a token is stored", () => {
-    tokenManager.set(SAMPLE_TOKEN);
-    expect(tokenManager.exists()).toBe(true);
-  });
 });

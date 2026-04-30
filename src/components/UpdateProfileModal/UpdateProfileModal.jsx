@@ -4,6 +4,25 @@ import ModalWithForm from "../ModalWithForm/ModalWithForm";
 import { useFormWithValidation } from "../../hooks/useFormWithValidation";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
+// Validation rules for profile update fields. Module-scope so the reference is stable.
+const UPDATE_VALIDATORS = {
+  name: (v) => {
+    if (!v || v.trim().length === 0) return "Name is required.";
+    if (v.length > 30) return "Name must be 30 characters or less.";
+    return "";
+  },
+  avatar: (v) => {
+    if (v && v.trim().length > 0) {
+      try {
+        new URL(v);
+      } catch {
+        return "Please enter a valid URL.";
+      }
+    }
+    return "";
+  },
+};
+
 // Dialog for editing the user's name and avatar URL.
 // Pre-populates with the current user's data whenever the modal opens.
 // Avatar is optional — an empty string is a valid value (no avatar set).
@@ -22,7 +41,7 @@ function UpdateProfileModal({
   };
 
   const { values, errors, isValid, handleChange, resetForm, setValues } =
-    useFormWithValidation(defaultValues, ["avatar"]);
+    useFormWithValidation(defaultValues, ["avatar"], UPDATE_VALIDATORS);
 
   useEffect(() => {
     if (isOpen && currentUser) {

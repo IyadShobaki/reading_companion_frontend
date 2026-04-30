@@ -19,6 +19,7 @@ import { LibraryContext } from "../../contexts/LibraryContext";
 import { useAuth } from "../../hooks/useAuth";
 import { useModal } from "../../hooks/useModal";
 import { useLibrary } from "../../hooks/useLibrary";
+import { useUser } from "../../hooks/useUser";
 
 // Root application component.
 // Owns auth state (via useAuth), modal state (via useModal), and routing logic.
@@ -36,9 +37,15 @@ function App() {
     signup,
     logout,
     restoreSession,
-    updateProfile,
+    updateCurrentUser,
     clearError,
   } = useAuth();
+  const {
+    updateProfile,
+    isLoading: isProfileLoading,
+    error: profileError,
+    clearError: clearProfileError,
+  } = useUser(updateCurrentUser);
   const { activeModal, openModal, closeModal } = useModal();
   const library = useLibrary();
 
@@ -86,8 +93,6 @@ function App() {
     // Library is fetched by the isLoggedIn effect below — no explicit call needed
   };
 
-  const handleUpdateProfile = (updatedData) => updateProfile(updatedData);
-
   // Clear library state on logout so stale data never leaks between accounts.
   // clearLibrary is called here for immediate UI feedback; the isLoggedIn
   // effect below would also clear it but on the next render cycle.
@@ -101,7 +106,8 @@ function App() {
   const handleCloseModal = useCallback(() => {
     closeModal();
     clearError();
-  }, [closeModal, clearError]);
+    clearProfileError();
+  }, [closeModal, clearError, clearProfileError]);
 
   // Attempt to restore an existing session from a stored JWT on initial mount
   useEffect(() => {
@@ -227,10 +233,10 @@ function App() {
           />
           <UpdateProfileModal
             isOpen={activeModal === "update-profile"}
-            onUpdate={handleUpdateProfile}
+            onUpdate={updateProfile}
             onClose={handleCloseModal}
-            isLoading={isLoading}
-            serverError={error}
+            isLoading={isProfileLoading}
+            serverError={profileError}
           />
           <BookPreviewModal
             isOpen={activeModal === "book-preview"}

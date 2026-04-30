@@ -18,6 +18,22 @@ function changeEvent(name, value) {
   return { target: { name, value } };
 }
 
+// Module-scope validators used by tests that exercise field-level error logic.
+// Mirrors the rules used by LoginModal / RegisterModal.
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const TEST_VALIDATORS = {
+  email: (v) => {
+    if (!v || v.trim().length === 0) return "Email is required.";
+    if (!EMAIL_REGEX.test(v)) return "Please enter a valid email.";
+    return "";
+  },
+  password: (v) => {
+    if (!v || v.trim().length === 0) return "Password is required.";
+    if (v.length < 6) return "Password must be at least 6 characters.";
+    return "";
+  },
+};
+
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
@@ -37,7 +53,7 @@ describe("useFormWithValidation", () => {
 
   it("handleChange sets a validation error for an invalid email", () => {
     const { result } = renderHook(() =>
-      useFormWithValidation({ email: "", password: "" }),
+      useFormWithValidation({ email: "", password: "" }, [], TEST_VALIDATORS),
     );
     act(() =>
       result.current.handleChange(changeEvent("email", "not-an-email")),
@@ -46,7 +62,9 @@ describe("useFormWithValidation", () => {
   });
 
   it("handleChange clears the error when a valid value is entered", () => {
-    const { result } = renderHook(() => useFormWithValidation({ email: "" }));
+    const { result } = renderHook(() =>
+      useFormWithValidation({ email: "" }, [], TEST_VALIDATORS),
+    );
     act(() => result.current.handleChange(changeEvent("email", "bad")));
     act(() =>
       result.current.handleChange(changeEvent("email", "good@example.com")),
@@ -78,7 +96,7 @@ describe("useFormWithValidation", () => {
 
   it("isValid is false when a field has a validation error", () => {
     const { result } = renderHook(() =>
-      useFormWithValidation({ email: "", password: "" }),
+      useFormWithValidation({ email: "", password: "" }, [], TEST_VALIDATORS),
     );
     act(() => result.current.handleChange(changeEvent("email", "not-valid")));
     act(() => result.current.handleChange(changeEvent("password", "pass")));

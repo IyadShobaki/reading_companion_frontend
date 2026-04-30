@@ -19,7 +19,6 @@ vi.mock("../services/authService", () => ({
     signin: vi.fn(),
     signup: vi.fn(),
     getCurrentUser: vi.fn(),
-    updateUser: vi.fn(),
     logout: vi.fn(),
   },
 }));

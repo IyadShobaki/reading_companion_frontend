@@ -2,6 +2,22 @@ import "./LoginModal.css";
 import ModalWithForm from "../ModalWithForm/ModalWithForm";
 import { useFormWithValidation } from "../../hooks/useFormWithValidation";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Validation rules for login fields. Module-scope so the reference is stable.
+const LOGIN_VALIDATORS = {
+  email: (v) => {
+    if (!v || v.trim().length === 0) return "Email is required.";
+    if (!EMAIL_REGEX.test(v)) return "Please enter a valid email.";
+    return "";
+  },
+  password: (v) => {
+    if (!v || v.trim().length === 0) return "Password is required.";
+    if (v.length < 6) return "Password must be at least 6 characters.";
+    return "";
+  },
+};
+
 // Login dialog. Server errors (wrong credentials, etc.) are surfaced via the
 // `serverError` prop passed down from useAuth rather than local state.
 function LoginModal({
@@ -18,7 +34,7 @@ function LoginModal({
   };
 
   const { values, errors, isValid, handleChange, resetForm } =
-    useFormWithValidation(defaultValues);
+    useFormWithValidation(defaultValues, [], LOGIN_VALIDATORS);
 
   const handleSubmit = async () => {
     if (!isValid) return;

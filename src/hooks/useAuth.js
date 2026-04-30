@@ -5,7 +5,6 @@
  * - User login (signin)
  * - User registration (signup)
  * - Session restoration
- * - Profile updates
  * - Logout
  *
  * Stores authentication state including:
@@ -103,28 +102,6 @@ export const useAuth = () => {
   }, []);
 
   /**
-   * Updates the logged-in user's profile information
-   * @param {Object} updatedData - Updated user profile data
-   * @returns {Promise<Object>} The updated user data
-   */
-  const updateProfile = useCallback(async (updatedData) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      // Call the update user service and store updated data
-      const { data: updatedUser } = await authService.updateUser(updatedData);
-      setCurrentUser(updatedUser);
-      return updatedUser;
-    } catch (err) {
-      const errorMsg = err.message || "Failed to update profile";
-      setError(errorMsg);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  /**
    * Logs out the current user
    * Clears user data and token from localStorage
    */
@@ -149,7 +126,7 @@ export const useAuth = () => {
     signup,
     logout,
     restoreSession,
-    updateProfile,
+    updateCurrentUser: setCurrentUser,
     clearError,
   };
 };

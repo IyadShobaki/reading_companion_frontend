@@ -1,6 +1,22 @@
 import { useState, useCallback, useMemo } from "react";
 
-export const useFormWithValidation = (initialValues, optionalFields = []) => {
+/**
+ * useFormWithValidation — generic form state manager.
+ *
+ * All validation logic lives in the caller. Pass a `validators` object whose
+ * keys are field names and whose values are `(value, allValues) => errorString`
+ * functions. Declare `validators` at module scope in each caller so the
+ * reference is stable across renders.
+ *
+ * @param {Object}   initialValues  - Initial field values.
+ * @param {string[]} optionalFields - Fields whose empty value does not block submission.
+ * @param {Object}   validators     - Map of fieldName → (value, allValues) => errorString.
+ */
+export const useFormWithValidation = (
+  initialValues,
+  optionalFields = [],
+  validators = {},
+) => {
   // Capture initial values once so they remain stable across re-renders.
   // useState only uses its argument on the first render, so this is safe.
   const [defaultValues] = useState(initialValues);
@@ -15,75 +31,12 @@ export const useFormWithValidation = (initialValues, optionalFields = []) => {
   );
   const [errors, setErrors] = useState(defaultErrors);
 
+  // Delegate all validation to the caller-supplied validators map.
+  // validators is module-scope in each caller (stable reference).
+  // values is included in deps for cross-field rules such as confirmPassword.
   const validateField = useCallback(
-    (name, value) => {
-      let error = "";
-
-      switch (name) {
-        case "name":
-          if (!value || value.trim().length === 0) {
-            error = "Name is required.";
-          } else if (value.length > 30) {
-            error = "Name must be 30 characters or less.";
-          }
-          break;
-
-        case "email":
-          if (!value || value.trim().length === 0) {
-            error = "Email is required.";
-          } else {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(value)) {
-              error = "Please enter a valid email.";
-            }
-          }
-          break;
-
-        case "password":
-          if (!value || value.trim().length === 0) {
-            error = "Password is required.";
-          } else if (value.length < 6) {
-            error = "Password must be at least 6 characters.";
-          }
-          break;
-
-        case "confirmPassword":
-          if (!value || value.trim().length === 0) {
-            error = "Please confirm your password.";
-          } else if (value !== values.password) {
-            error = "Passwords do not match.";
-          }
-          break;
-
-        case "imageUrl":
-          if (!value || value.trim().length === 0) {
-            error = "Image URL is required.";
-          } else {
-            try {
-              new URL(value);
-            } catch {
-              error = "Please enter a valid URL.";
-            }
-          }
-          break;
-
-        case "avatar":
-          if (value && value.trim().length > 0) {
-            try {
-              new URL(value);
-            } catch {
-              error = "Please enter a valid URL.";
-            }
-          }
-          break;
-
-        default:
-          break;
-      }
-
-      return error;
-    },
-    [values.password],
+    (name, value) => validators[name]?.(value, values) ?? "",
+    [validators, values],
   );
 
   const handleChange = useCallback(
