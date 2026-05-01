@@ -1,6 +1,9 @@
 import { Component } from "react";
 import "./ErrorBoundary.css";
 
+/**
+ * Catches render-time errors below it and shows a resettable fallback UI.
+ */
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -8,14 +11,28 @@ class ErrorBoundary extends Component {
     this._handleReset = this._handleReset.bind(this);
   }
 
+  /**
+   * Switch to fallback UI after a descendant throws during render.
+   * @returns {{hasError: boolean}} Updated boundary state.
+   */
   static getDerivedStateFromError() {
     return { hasError: true };
   }
 
+  /**
+   * Log caught errors only during local development.
+   * @param {Error} error - Caught render error.
+   * @param {Object} info - React component stack details.
+   */
   componentDidCatch(error, info) {
-    console.error("ErrorBoundary caught an error:", error, info);
+    if (import.meta.env.DEV) {
+      console.error("ErrorBoundary caught an error:", error, info);
+    }
   }
 
+  /**
+   * Clear the fallback state so children can render again.
+   */
   _handleReset() {
     this.setState({ hasError: false });
   }

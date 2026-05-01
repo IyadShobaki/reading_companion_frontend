@@ -1,27 +1,24 @@
 /**
- * aiService — API service for AI assistant actions.
+ * aiService - API service for AI assistant actions.
  *
- * Communicates with the Stage 2 backend AI endpoints:
- *   POST /ai/summarize  — summarise the current page or section
- *   POST /ai/explain    — explain a passage or concept
- *   POST /ai/context    — provide historical/literary context
- *   POST /ai/ask        — answer a free-form user question
+ * Communicates with the protected backend AI endpoints:
+ *   POST /ai/summarize - summarize the current book context
+ *   POST /ai/explain   - explain a passage or concept
+ *   POST /ai/context   - provide historical/literary context
+ *   POST /ai/ask       - answer a free-form user question
  *
  * All requests carry optional book context so the AI can give relevant answers.
  * Authentication is injected automatically by ApiClient via the stored JWT.
- *
- * NOTE: These endpoints are implemented in Stage 2 (Step 18). Until then,
- *       calls will fail with a network error that AiPanel surfaces gracefully.
  */
 
 import ApiClient from "../utils/apiClient";
 
-/** Shared ApiClient instance — reads base URL from Vite env at module load. */
+/** Shared ApiClient instance; reads base URL from Vite env at module load. */
 const apiClient = new ApiClient(import.meta.env.VITE_API_BASE_URL ?? "");
 
 export const aiService = {
   /**
-   * Summarise the book at the current page.
+   * Summarize the book at the current page.
    *
    * @param {Object} payload
    * @param {string} payload.googleBookId - Google Books volume ID.

@@ -113,6 +113,8 @@ describe("Reader", () => {
     vi.clearAllMocks();
     // Default: no saved progress
     progressStorage.loadProgress.mockReturnValue(null);
+    progressService.getProgress.mockResolvedValue(null);
+    progressService.saveProgress.mockResolvedValue({});
   });
 
   afterEach(() => {
@@ -400,12 +402,14 @@ describe("Reader", () => {
     expect(screen.getByText("Page 12")).toBeInTheDocument();
   });
 
-  it("does not call the progress API when authenticated user has no local progress", async () => {
+  it("checks the progress API when authenticated user has no local progress", async () => {
     booksService.getById.mockResolvedValue(MOCK_BOOK);
     progressStorage.loadProgress.mockReturnValue(null);
+    progressService.getProgress.mockResolvedValue(null);
     renderAtAsUser("abc123");
     await act(() => vi.runAllTimersAsync());
-    expect(progressService.getProgress).not.toHaveBeenCalled();
+    expect(progressService.getProgress).toHaveBeenCalledWith("abc123");
+    expect(progressStorage.loadProgress).not.toHaveBeenCalled();
     expect(screen.getByText("Page 1")).toBeInTheDocument();
   });
 

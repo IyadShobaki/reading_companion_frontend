@@ -1,164 +1,87 @@
-# Reading Companion — Frontend
+# Reading Companion - Frontend
 
-React single-page application for the Reading Companion project. Lets users discover books via the Google Books API, build a personal reading shelf, track reading progress page-by-page inside an embedded Google Books viewer, take per-book notes, and get AI-powered reading assistance through a Gemini-backed chat panel.
-
----
+React single-page application for Reading Companion. The frontend lets users discover books through Google Books, preview and read embeddable books, manage a saved library, save reading progress, write per-book notes, and use a Gemini-backed AI assistant in the reader.
 
 ## Features
 
-- **Book search** — Search the Google Books catalogue by title, author, or keyword. Results are displayed in a paginated grid with cover art, author, and a preview link.
-- **Personal library** — Save books to a private shelf. Authenticated users' libraries persist on the backend; guest libraries are read-only.
-- **Embedded reader** — Open any Google Books Preview directly inside the app. The Google Books Viewer is integrated via the JavaScript API.
-- **Reading progress** — The current page is auto-saved to the backend and restored on the next visit.
-- **Per-book notes** — Add, edit, and delete reading notes scoped to a specific book and page. Notes are stored on the backend and fetched when the reader opens.
-- **AI reading assistant** _(stretch goal)_ — A panel inside the reader provides four Gemini-powered actions: Summarise, Explain, Context, and Ask — all scoped to the current book and page.
-- **Authentication** — Register, log in, update profile (name + avatar), and log out. Session is restored across browser refreshes from a stored JWT.
-- **Protected routing** — The `/profile` and `/library` routes redirect unauthenticated users to home. A spinner is shown while the session is being restored to prevent redirect flashes.
-- **Error boundary** — An `ErrorBoundary` class component wraps the app root, catching unexpected render errors and showing a recoverable fallback UI.
-- **Responsive BEM CSS** — All components use scoped BEM class names with CSS custom properties for consistent theming.
+- **Book discovery and search** - Search by title, author, or keyword and render normalized Google Books results.
+- **Home sections** - Cached category sections for repeated browsing without unnecessary API calls.
+- **Book preview modal** - Detailed metadata, availability status, and library actions.
+- **Embedded reader** - In-app Google Books iframe reader with page navigation and non-viewable fallback states.
+- **Progress tracking** - Guests use localStorage; authenticated users load from the backend first and keep a local mirror.
+- **Personal library** - Authenticated users can add/remove saved books through the backend API.
+- **Notes** - Authenticated users can create, edit, delete, sort, expand, and collapse notes per book/page.
+- **AI assistant** - Authenticated users can summarize, explain, request context, and ask questions through backend `/ai/*` endpoints.
+- **Authentication** - Register, sign in, restore a JWT-backed session, update profile data, and log out.
+- **Resilience** - Loading, empty, error, and fallback states plus an app-level `ErrorBoundary`.
 
-### Google Books availability note
+## Google Books Availability
 
-The Google Books Viewer only supports books that Google has licensed for embedded preview (`viewability: "PARTIAL"` or `"ALL_PAGES"`). Books marked `"NO_PAGES"` or `"UNKNOWN"` cannot be read in-app — the reader shows an appropriate message in those cases.
-
----
+Google controls which books can be embedded. Books with no embeddable preview or no viewable pages are still searchable, but the reader shows a clear fallback instead of attempting to render unavailable content.
 
 ## Tech Stack
 
-| Technology                  | Version | Role                      |
-| --------------------------- | ------- | ------------------------- |
-| React                       | 19      | UI library                |
-| React Router                | 7       | Client-side routing       |
-| Vite                        | 8       | Build tool and dev server |
-| CSS Custom Properties       | —       | Design token system       |
-| Google Books JavaScript API | —       | Embedded viewer           |
+| Technology | Role |
+| ---------- | ---- |
+| React 19 | UI library |
+| React Router 7 | Client-side routing |
+| Vite 8 | Build tool and dev server |
+| Vanilla CSS with BEM | Component styling |
+| Google Books API | Discovery data |
+| Google Books iframe embed | In-app reading |
+| Vitest and Testing Library | Frontend tests |
 
-**Testing:** Vitest · jsdom · @testing-library/react · @testing-library/user-event (398 tests, 39 files)
+Current documented test baseline: 40 Vitest files, 402 tests.
 
----
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js LTS
-- The Reading Companion backend running on `http://localhost:3001`
-- A Google Books API key (optional — search still works without one but may hit rate limits)
-
-### Installation
+## Setup
 
 ```bash
-# From the reading_companion_frontend directory
 npm install
 ```
 
-### Environment variables
-
-Copy `.env.example` to `.env` and fill in the values:
+Create `.env` from `.env.example`:
 
 ```env
 VITE_API_BASE_URL=http://localhost:3001
 VITE_GOOGLE_BOOKS_API_KEY=your_google_books_api_key_here
 ```
 
-> Only variables prefixed with `VITE_` are exposed to the browser build.
+`VITE_GOOGLE_BOOKS_API_KEY` is optional for local development but recommended to avoid rate-limit friction.
 
-### Running
+## Commands
 
 ```bash
-# Development (opens browser automatically)
 npm run dev
-```
-
-App runs on `http://localhost:3000`.
-
-### Tests
-
-```bash
 npm test
-# watch mode
-npm run test:watch
-# with coverage
 npm run test:coverage
-```
-
-### Build
-
-```bash
+npm run lint
 npm run build
-# Preview the production build locally
 npm run preview
 ```
 
----
+The dev server runs on `http://localhost:3000`.
 
 ## Project Structure
 
+```text
+reading_companion_frontend/
+  index.html
+  vite.config.js
+  src/
+    assets/          Static images and fonts
+    components/      Feature and UI components
+    contexts/        Current user and library contexts
+    hooks/           Auth, modal, form, library, notes, progress, AI, and books hooks
+    services/        API clients for auth, books, library, notes, progress, and AI
+    utils/           ApiClient, token manager, progress storage, and book cache
+    vendor/          normalize.css and font CSS
 ```
-reading_companion_frontend/src/
-├── components/
-│   ├── App/                    # Root — auth state, modal state, routing
-│   ├── Header/                 # Navigation, search bar, auth buttons
-│   ├── Footer/                 # Static footer
-│   ├── Main/                   # Home / landing page
-│   ├── Profile/                # Protected profile page with library and settings
-│   ├── Library/                # Saved books grid
-│   ├── Reader/                 # Embedded Google Books viewer + side panels
-│   ├── NotesPanel/             # Per-book notes (add / edit / delete)
-│   ├── NoteForm/               # Controlled note form with validation
-│   ├── NoteCard/               # Single note display with inline edit
-│   ├── AiPanel/                # Gemini AI reading assistant panel
-│   ├── BookCard/               # Book thumbnail card
-│   ├── BookGrid/               # Responsive book grid layout
-│   ├── BookPreviewModal/       # Book details popup with save/remove
-│   ├── BookSection/            # Labelled section containing a BookGrid
-│   ├── SearchResults/          # Search results page
-│   ├── ProtectedRoute/         # Route guard (loading → redirect → render)
-│   ├── ConfirmationModal/      # Generic delete confirmation dialog
-│   ├── LoginModal/             # Login form
-│   ├── RegisterModal/          # Registration form
-│   ├── UpdateProfileModal/     # Profile edit form
-│   ├── ModalWithForm/          # Reusable accessible modal shell
-│   ├── ErrorBoundary/          # Class component — catches render errors
-│   ├── Loading/                # Spinner
-│   ├── SideBar/                # Navigation sidebar
-│   └── UserAvatar/             # Avatar image with fallback initials
-├── hooks/
-│   ├── useAuth.js              # Auth state: signin, signup, logout, restoreSession
-│   ├── useModal.js             # Which modal is open
-│   ├── useFormWithValidation.js # Values, real-time validation, isValid flag
-│   ├── useLibrary.js           # Saved books state + CRUD
-│   ├── useNotes.js             # Notes state + CRUD for one book
-│   ├── useProgress.js          # Reading progress load + save
-│   ├── useAiPanel.js           # AI panel request state
-│   ├── useBookSection.js       # Book section data loading
-│   ├── useDebounce.js          # Debounce utility hook
-│   └── useGoogleBooksViewer.js # Google Books Viewer JS API integration
-├── services/
-│   ├── authService.js          # signup, signin, getCurrentUser, updateUser, logout
-│   ├── library.service.js      # getAll, add, remove
-│   ├── notes.service.js        # getByBook, create, update, remove
-│   ├── progress.service.js     # get, save
-│   ├── ai.service.js           # summarize, explain, context, ask
-│   └── books.service.js        # Google Books API search + getById
-├── utils/
-│   ├── apiClient.js            # Fetch wrapper: auth headers, error.status, DEV logging
-│   ├── tokenManager.js         # localStorage JWT abstraction (get/set/remove/exists)
-│   └── progressStorage.js      # localStorage reading progress fallback
-├── contexts/
-│   └── CurrentUserContext.js   # currentUser React context
-└── vendor/
-    ├── normalize.css
-    └── fonts.css
-```
-
----
 
 ## Key Design Decisions
 
-- **No external state library** — Auth, library, notes, and progress state live in custom hooks backed by Context API. Keeps the bundle small.
-- **`error.status` on thrown errors** — `ApiClient` attaches the HTTP status code to every thrown error so hooks can distinguish 401 / 403 / network failures without string-matching.
-- **`isLoading` starts `true`** — `useAuth.isLoading` begins as `true`, so `ProtectedRoute` shows a spinner during the initial session check instead of flashing a redirect.
-- **Local notes hook** — `useNotes` is instantiated inside `NotesPanel` rather than lifted to `App`. Notes are scoped to a single open book and reset automatically on unmount.
-- **Optimistic UI for notes and library** — State is updated immediately; the backend call runs concurrently. On failure, the previous state is rolled back.
-- **CSS design tokens** — All colours, spacing, and radii are CSS custom properties defined in `:root`. Component stylesheets reference `var(--token-name)` only.
+- Custom hooks and React Context handle app state instead of an external state library.
+- Service modules isolate all backend and third-party API calls.
+- `ApiClient` injects auth headers, handles `204 No Content`, unwraps response envelopes, and attaches `error.status`.
+- Library and notes use optimistic updates with rollback on request failure.
+- Authenticated progress checks the backend first for cross-device resume, then falls back to localStorage on API failure.
+- CSS uses BEM class names and design tokens from `App.css`.

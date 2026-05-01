@@ -4,16 +4,11 @@ import { progressService } from "../services/progress.service";
 import { progressStorage } from "../utils/progressStorage";
 
 /**
- * useProgress — unified reading-progress manager.
+ * Unified reading-progress manager for guests and authenticated users.
  *
- * Authenticated users: progress is persisted to the backend and mirrored to
- * localStorage so that BookCard / BookPreviewModal can read it synchronously
- * to show "Continue Reading" without waiting for an async API call.
- *
- * Guest users: progress lives entirely in localStorage (progressStorage).
- *
- * Both `loadProgress` and `saveProgress` are safe to call in either mode —
- * the backend is never contacted unless the user is logged in.
+ * Authenticated users persist progress to the backend and mirror successful
+ * reads/writes to localStorage for synchronous UI reads and offline fallback.
+ * Guest users use localStorage only.
  */
 export function useProgress() {
   const { currentUser } = useContext(CurrentUserContext);
@@ -22,42 +17,27 @@ export function useProgress() {
   /**
    * Load the saved page number for a book.
    *
-   * Auth users: checks localStorage first. If localStorage has no entry the
-   * book is new on this device — the backend call is skipped to avoid a
-   * spurious 404. If localStorage has a value, the backend is queried so the
-   * latest page (e.g. saved from another session) is returned and mirrored
-   * back to localStorage. Falls back to the local value on API error.
+   * Authenticated users check the backend first so progress saved on another
+   * device is restored even when this browser has no local copy. If the API
+   * fails, localStorage is used as the offline fallback.
    *
-   * Guest users: reads from localStorage only.
-   *
-   * Cross-device sync is preserved because every backend save always mirrors
-   * the result to localStorage on the current device.
-   *
-   * @param {string} googleBookId
-   * @returns {Promise<number|null>}
+   * @param {string} googleBookId - Google Books volume id.
+   * @returns {Promise<number|null>} Saved page number, or null when none exists.
    */
   const loadProgress = useCallback(
     async (googleBookId) => {
       if (isLoggedIn) {
-        // Only call the backend when localStorage already holds progress for
-        // this book. A null entry means the book is new here — skip the
-        // backend to avoid a needless 404 ("Start Reading", not "Continue").
-        const localPage = progressStorage.loadProgress(googleBookId);
-        if (localPage !== null) {
-          try {
-            const page = await progressService.getProgress(googleBookId);
-            if (page !== null) {
-              // Mirror latest backend page to localStorage.
-              progressStorage.saveProgress(googleBookId, page);
-              return page;
-            }
-          } catch {
-            // Fall back to local value on unexpected API error.
+        try {
+          const page = await progressService.getProgress(googleBookId);
+          if (page !== null) {
+            progressStorage.saveProgress(googleBookId, page);
           }
-          return localPage;
+          return page;
+        } catch {
+          return progressStorage.loadProgress(googleBookId);
         }
-        return null;
       }
+
       return progressStorage.loadProgress(googleBookId);
     },
     [isLoggedIn],
@@ -66,23 +46,21 @@ export function useProgress() {
   /**
    * Persist the current page number for a book.
    *
-   * Always writes to localStorage first so the save is never lost.
-   * Auth users: also persists to the backend (best-effort; localStorage is
-   * already updated even if the API call fails).
+   * The local copy is written first. Authenticated users then sync to the
+   * backend on a best-effort basis; failed API writes leave the local copy.
    *
-   * @param {string} googleBookId
-   * @param {number} pageNumber
+   * @param {string} googleBookId - Google Books volume id.
+   * @param {number} pageNumber - Current page number.
    * @returns {Promise<void>}
    */
   const saveProgress = useCallback(
     async (googleBookId, pageNumber) => {
-      // Always mirror to localStorage for guest fallback and synchronous reads.
       progressStorage.saveProgress(googleBookId, pageNumber);
       if (isLoggedIn) {
         try {
           await progressService.saveProgress(googleBookId, pageNumber);
         } catch {
-          // Best effort — localStorage is already updated.
+          // Local progress is already saved for offline recovery.
         }
       }
     },

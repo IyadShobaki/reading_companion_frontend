@@ -1,28 +1,24 @@
 /**
- * progressService — API service for reading progress.
+ * API service for authenticated reading progress.
  *
- * Communicates with the backend progress endpoints:
- *   GET  /progress/:googleBookId  — retrieve saved page number for a book
- *   PUT  /progress/:googleBookId  — create or update saved page number
+ * Backend routes:
+ * - GET /progress/:googleBookId: retrieve saved page number for a book.
+ * - PUT /progress/:googleBookId: create or update saved page number.
  *
- * Both requests are authenticated via the JWT injected by ApiClient.
- * The GET endpoint returns 404 (not an error) when no progress has been
- * saved yet — getProgress maps this to null so callers don't need to
- * catch 404 specifically.
+ * The GET endpoint returns 404 when no progress has been saved. This service
+ * maps that case to null so hook callers can handle "no progress" directly.
  */
 
 import ApiClient from "../utils/apiClient";
 
-/** Shared ApiClient instance — reads base URL from Vite env at module load. */
+/** Shared ApiClient instance; reads base URL from Vite env at module load. */
 const apiClient = new ApiClient(import.meta.env.VITE_API_BASE_URL ?? "");
 
 export const progressService = {
   /**
    * Retrieve the saved page number for a book.
-   * Returns null when no progress has been saved yet (backend 404).
-   *
-   * @param {string} googleBookId - Google Books volume ID.
-   * @returns {Promise<number|null>} Saved page number (≥ 1), or null if none.
+   * @param {string} googleBookId - Google Books volume id.
+   * @returns {Promise<number|null>} Saved page number, or null if none exists.
    */
   async getProgress(googleBookId) {
     try {
@@ -37,11 +33,10 @@ export const progressService = {
   },
 
   /**
-   * Persist the current page number for a book (upsert — creates or updates).
-   *
-   * @param {string} googleBookId - Google Books volume ID.
-   * @param {number} pageNumber   - Current page number (≥ 1).
-   * @returns {Promise<Object>} The saved progress record from the server.
+   * Persist the current page number for a book.
+   * @param {string} googleBookId - Google Books volume id.
+   * @param {number} pageNumber - Current page number.
+   * @returns {Promise<Object>} Saved progress record from the backend.
    */
   async saveProgress(googleBookId, pageNumber) {
     const res = await apiClient.put(

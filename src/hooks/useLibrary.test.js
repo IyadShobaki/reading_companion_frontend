@@ -174,6 +174,39 @@ describe("useLibrary", () => {
     );
   });
 
+  it("addBook is a no-op when the book is already saved", async () => {
+    libraryService.getAll.mockResolvedValue([BOOK_A]);
+    const { result } = renderHook(() => useLibrary());
+
+    await act(() => result.current.fetchLibrary());
+    await act(() => result.current.addBook(BOOK_A));
+
+    expect(libraryService.add).not.toHaveBeenCalled();
+    expect(result.current.savedBooks).toEqual([BOOK_A]);
+  });
+
+  it("addBook ignores duplicate optimistic adds while the first request is pending", async () => {
+    let resolveAdd;
+    libraryService.add.mockReturnValue(
+      new Promise((res) => {
+        resolveAdd = res;
+      }),
+    );
+    const { result } = renderHook(() => useLibrary());
+
+    act(() => {
+      result.current.addBook(BOOK_A);
+      result.current.addBook(BOOK_A);
+    });
+
+    expect(libraryService.add).toHaveBeenCalledTimes(1);
+    expect(
+      result.current.savedBooks.filter((book) => book.googleBookId === "aaa"),
+    ).toHaveLength(1);
+
+    await act(async () => resolveAdd(BOOK_A));
+  });
+
   // ── removeBook ────────────────────────────────────────────────────────────
 
   it("removeBook optimistically removes the book before the API resolves", async () => {
