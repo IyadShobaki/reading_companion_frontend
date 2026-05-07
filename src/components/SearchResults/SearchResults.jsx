@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import BookGrid from "../BookGrid/BookGrid";
@@ -9,6 +9,8 @@ import "./SearchResults.css";
 
 // Module-scope no-op so prop default references are stable across renders
 const noop = () => {};
+
+const BATCH_SIZE = 12;
 
 /**
  * SearchResults — displays paginated results for the current URL query param.
@@ -37,10 +39,18 @@ function SearchResults({
 
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState(null);
+  const [startIndex, setStartIndex] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+
+  // Track the query the current results belong to so Load More requests stay
+  // consistent when the query changes mid-flight
+  const activeQueryRef = useRef(debouncedQuery);
 
   useEffect(() => {
     const trimmed = debouncedQuery.trim();
+    activeQueryRef.current = trimmed;
 
     // Nothing to fetch if the query is empty.
     if (!trimmed) {
@@ -48,6 +58,8 @@ function SearchResults({
       setBooks([]);
       setError(null);
       setIsLoading(false);
+      setStartIndex(0);
+      setHasMore(false);
       return;
     }
 
@@ -55,11 +67,17 @@ function SearchResults({
 
     setIsLoading(true);
     setError(null);
+    setStartIndex(0);
+    setHasMore(false);
 
     booksService
-      .search(trimmed)
+      .search(trimmed, { maxResults: BATCH_SIZE, startIndex: 0 })
       .then((data) => {
-        if (!cancelled) setBooks(data);
+        if (!cancelled) {
+          setBooks(data);
+          setHasMore(data.length === BATCH_SIZE);
+          setStartIndex(BATCH_SIZE);
+        }
       })
       .catch((err) => {
         if (!cancelled)
@@ -73,6 +91,27 @@ function SearchResults({
       cancelled = true;
     };
   }, [debouncedQuery]);
+
+  const handleLoadMore = useCallback(() => {
+    const trimmed = activeQueryRef.current;
+    if (!trimmed || isLoadingMore) return;
+
+    setIsLoadingMore(true);
+
+    booksService
+      .search(trimmed, { maxResults: BATCH_SIZE, startIndex })
+      .then((data) => {
+        setBooks((prev) => [...prev, ...data]);
+        setHasMore(data.length === BATCH_SIZE);
+        setStartIndex((prev) => prev + BATCH_SIZE);
+      })
+      .catch((err) => {
+        setError(err.message || "Failed to load more results.");
+      })
+      .finally(() => {
+        setIsLoadingMore(false);
+      });
+  }, [startIndex, isLoadingMore]);
 
   const renderContent = () => {
     if (isLoading) {
@@ -112,14 +151,37 @@ function SearchResults({
     }
 
     return (
-      <BookGrid
-        books={books}
-        isLoggedIn={isLoggedIn}
-        savedBookIds={savedBookIds}
-        onPreview={onPreview}
-        onAddToLibrary={onAddToLibrary}
-        onRemoveFromLibrary={onRemoveFromLibrary}
-      />
+      <>
+        <BookGrid
+          books={books}
+          isLoggedIn={isLoggedIn}
+          savedBookIds={savedBookIds}
+          onPreview={onPreview}
+          onAddToLibrary={onAddToLibrary}
+          onRemoveFromLibrary={onRemoveFromLibrary}
+        />
+        {hasMore && (
+          <div className="search-results__load-more">
+            <button
+              type="button"
+              className="search-results__load-more-btn"
+              onClick={handleLoadMore}
+              disabled={isLoadingMore}
+              aria-label="Load more search results"
+            >
+              {isLoadingMore ? "Loading…" : "Load more"}
+            </button>
+          </div>
+        )}
+        {error && !isLoading && (
+          <p
+            className="search-results__message search-results__message_error"
+            role="alert"
+          >
+            {error}
+          </p>
+        )}
+      </>
     );
   };
 

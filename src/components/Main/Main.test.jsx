@@ -48,11 +48,8 @@ describe("Main", () => {
     vi.resetAllMocks();
   });
 
-  it("renders all 5 section headings", () => {
+  it("renders all 4 section headings", () => {
     renderMain();
-    expect(
-      screen.getByRole("heading", { name: "Trending" }),
-    ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "New Books" }),
     ).toBeInTheDocument();
@@ -67,12 +64,12 @@ describe("Main", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders 5 section loading indicators on initial mount", () => {
+  it("renders 4 section loading indicators on initial mount", () => {
     // Keep all section promises pending so the loading state is visible
     booksService.fetchSection.mockReturnValue(new Promise(() => {}));
     renderMain();
     // One role="status" per section
-    expect(screen.getAllByRole("status")).toHaveLength(5);
+    expect(screen.getAllByRole("status")).toHaveLength(4);
   });
 
   it("renders without crashing when no props are provided (uses safe defaults)", () => {

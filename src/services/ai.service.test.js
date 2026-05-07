@@ -42,46 +42,6 @@ describe("aiService", () => {
     vi.clearAllMocks();
   });
 
-  // ── summarize ─────────────────────────────────────────────────────────────
-
-  describe("summarize", () => {
-    it("posts to /ai/summarize with book context", async () => {
-      mockApiClient.post.mockResolvedValue({ response: "A summary." });
-      const result = await aiService.summarize(BASE_PAYLOAD);
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        "/ai/summarize",
-        BASE_PAYLOAD,
-      );
-      expect(result).toEqual({ response: "A summary." });
-    });
-  });
-
-  // ── explain ───────────────────────────────────────────────────────────────
-
-  describe("explain", () => {
-    it("posts to /ai/explain with book context", async () => {
-      mockApiClient.post.mockResolvedValue({ response: "An explanation." });
-      await aiService.explain(BASE_PAYLOAD);
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        "/ai/explain",
-        BASE_PAYLOAD,
-      );
-    });
-  });
-
-  // ── context ───────────────────────────────────────────────────────────────
-
-  describe("context", () => {
-    it("posts to /ai/context with book context", async () => {
-      mockApiClient.post.mockResolvedValue({ response: "Historical context." });
-      await aiService.context(BASE_PAYLOAD);
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        "/ai/context",
-        BASE_PAYLOAD,
-      );
-    });
-  });
-
   // ── ask ───────────────────────────────────────────────────────────────────
 
   describe("ask", () => {
@@ -90,6 +50,34 @@ describe("aiService", () => {
       const payload = { ...BASE_PAYLOAD, question: "What does this mean?" };
       await aiService.ask(payload);
       expect(mockApiClient.post).toHaveBeenCalledWith("/ai/ask", payload);
+    });
+
+    it("includes authors, description, and categories when provided", async () => {
+      mockApiClient.post.mockResolvedValue({ response: "An answer." });
+      const enriched = {
+        ...BASE_PAYLOAD,
+        question: "Who wrote this?",
+        authors: ["Robert C. Martin"],
+        description: "A guide to writing clean code.",
+        categories: ["Programming"],
+      };
+      await aiService.ask(enriched);
+      expect(mockApiClient.post).toHaveBeenCalledWith("/ai/ask", enriched);
+    });
+
+    it("omits optional fields when they are empty", async () => {
+      mockApiClient.post.mockResolvedValue({ response: "An answer." });
+      await aiService.ask({
+        ...BASE_PAYLOAD,
+        question: "Quick question?",
+        authors: [],
+        description: "",
+        categories: [],
+      });
+      expect(mockApiClient.post).toHaveBeenCalledWith("/ai/ask", {
+        ...BASE_PAYLOAD,
+        question: "Quick question?",
+      });
     });
   });
 });

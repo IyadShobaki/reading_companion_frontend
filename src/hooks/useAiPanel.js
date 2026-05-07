@@ -16,9 +16,12 @@ import { aiService } from "../services/ai.service";
 
 /**
  * @param {Object} bookContext - Book metadata passed to every AI request.
- * @param {string} bookContext.googleBookId
- * @param {string} bookContext.title
- * @param {number} bookContext.pageNumber
+ * @param {string}   bookContext.googleBookId
+ * @param {string}   bookContext.title
+ * @param {number}   bookContext.pageNumber
+ * @param {string[]} [bookContext.authors]
+ * @param {string}   [bookContext.description]
+ * @param {string[]} [bookContext.categories]
  *
  * @returns {{
  *   userInput: string,

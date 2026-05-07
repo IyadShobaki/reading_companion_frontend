@@ -7,7 +7,6 @@ import "./Main.css";
  * Each entry maps to a named booksService.fetchSection key.
  */
 const BOOK_SECTIONS = [
-  { key: "trending", title: "Trending" },
   { key: "new", title: "New Books" },
   { key: "philosophy", title: "Philosophy" },
   { key: "romance", title: "Romance" },

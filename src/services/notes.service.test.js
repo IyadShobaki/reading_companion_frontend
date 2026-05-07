@@ -52,6 +52,23 @@ describe("notesService", () => {
     vi.clearAllMocks();
   });
 
+  // ── getAllNotes ───────────────────────────────────────────────────────────
+
+  describe("getAllNotes", () => {
+    it("calls GET /notes", async () => {
+      mockApiClient.get.mockResolvedValue({ data: [MOCK_NOTE] });
+      const result = await notesService.getAllNotes();
+      expect(mockApiClient.get).toHaveBeenCalledWith("/notes");
+      expect(result).toEqual([MOCK_NOTE]);
+    });
+
+    it("returns an empty array when data is absent", async () => {
+      mockApiClient.get.mockResolvedValue({});
+      const result = await notesService.getAllNotes();
+      expect(result).toEqual([]);
+    });
+  });
+
   // ── getByBook ─────────────────────────────────────────────────────────────
 
   describe("getByBook", () => {

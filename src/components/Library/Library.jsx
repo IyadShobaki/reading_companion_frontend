@@ -15,7 +15,7 @@
  * Route: /library  (protected — requires login)
  */
 
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 import { LibraryContext } from "../../contexts/LibraryContext";
 import BookGrid from "../BookGrid/BookGrid";
 import Loading from "../Loading/Loading";
@@ -38,6 +38,24 @@ function Library({
   const { savedBooks, savedBookIds, isLoading, error, fetchLibrary } =
     useContext(LibraryContext);
 
+  const [sortBy, setSortBy] = useState("date");
+
+  // Client-side sort — no extra API calls needed
+  const sortedBooks = useMemo(() => {
+    const copy = [...savedBooks];
+    if (sortBy === "title") {
+      copy.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortBy === "author") {
+      copy.sort((a, b) => {
+        const authorA = a.authors[0] ?? "";
+        const authorB = b.authors[0] ?? "";
+        return authorA.localeCompare(authorB);
+      });
+    }
+    // "date" keeps the original save order (newest first from backend)
+    return copy;
+  }, [savedBooks, sortBy]);
+
   // Fetch on mount so the list is fresh every time the page is visited
   useEffect(() => {
     fetchLibrary();
@@ -45,7 +63,24 @@ function Library({
 
   return (
     <main className="library">
-      <h1 className="library__heading">My Library</h1>
+      <div className="library__toolbar">
+        <h1 className="library__heading">My Library</h1>
+        {savedBooks.length > 1 && (
+          <label htmlFor="library-sort" className="library__sort-label">
+            Sort by
+            <select
+              id="library-sort"
+              className="library__sort-select"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="date">Date saved</option>
+              <option value="title">Title A–Z</option>
+              <option value="author">Author A–Z</option>
+            </select>
+          </label>
+        )}
+      </div>
 
       {/* Loading */}
       {isLoading && (
@@ -72,7 +107,7 @@ function Library({
       {/* Book grid */}
       {!isLoading && !error && savedBooks.length > 0 && (
         <BookGrid
-          books={savedBooks}
+          books={sortedBooks}
           isLoggedIn
           savedBookIds={savedBookIds}
           onPreview={onPreview}

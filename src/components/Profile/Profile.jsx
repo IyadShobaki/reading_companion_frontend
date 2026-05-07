@@ -1,8 +1,9 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Profile.css";
 import SideBar from "../SideBar/SideBar";
 import { LibraryContext } from "../../contexts/LibraryContext";
+import { notesService } from "../../services/notes.service";
 
 /**
  * Profile page — protected route for authenticated users.
@@ -16,6 +17,22 @@ import { LibraryContext } from "../../contexts/LibraryContext";
  */
 function Profile({ onLogout, onOpenUpdateModal }) {
   const { savedBooks } = useContext(LibraryContext);
+  const [notesCount, setNotesCount] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    notesService
+      .getAllNotes()
+      .then((notes) => {
+        if (!cancelled) setNotesCount(notes.length);
+      })
+      .catch(() => {
+        if (!cancelled) setNotesCount(0);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <section className="profile">
@@ -26,6 +43,12 @@ function Profile({ onLogout, onOpenUpdateModal }) {
           <div className="profile__stat-card">
             <p className="profile__stat-value">{savedBooks.length}</p>
             <p className="profile__stat-label">Books saved</p>
+          </div>
+          <div className="profile__stat-card">
+            <p className="profile__stat-value">
+              {notesCount === null ? "—" : notesCount}
+            </p>
+            <p className="profile__stat-label">Notes written</p>
           </div>
         </section>
 

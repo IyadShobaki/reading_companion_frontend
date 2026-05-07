@@ -1,0 +1,148 @@
+/* ── All Notes page ──────────────────────────────────────────────────────── */
+
+.all-notes {
+  flex-grow: 1;
+  padding: 32px 0 48px;
+}
+
+.all-notes__heading {
+  font-size: var(--font-size-xl, 1.5rem);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 28px;
+}
+
+.all-notes__empty {
+  font-size: var(--font-size-base);
+  color: var(--color-black-60);
+  margin: 40px 0 0;
+}
+
+.all-notes__error {
+  font-size: var(--font-size-base);
+  color: var(--color-error);
+  margin: 40px 0 0;
+}
+
+/* ── Book group list ─────────────────────────────────────────────────────── */
+
+.all-notes__book-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.all-notes__book-section {
+  border: 1px solid var(--color-black-20);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* ── Collapsible book header ─────────────────────────────────────────────── */
+
+.all-notes__book-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--color-black-05, #f5f5f5);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-family);
+}
+
+.all-notes__book-header:hover {
+  background: var(--color-black-10, #ebebeb);
+}
+
+.all-notes__book-title {
+  flex: 1;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-black);
+}
+
+.all-notes__book-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-black-60);
+}
+
+.all-notes__chevron {
+  font-size: 1.1rem;
+  color: var(--color-black-60);
+  transition: transform 0.15s ease;
+}
+
+.all-notes__chevron_open {
+  transform: rotate(0deg);
+}
+
+.all-notes__chevron:not(.all-notes__chevron_open) {
+  transform: rotate(-90deg);
+}
+
+/* ── Note list ───────────────────────────────────────────────────────────── */
+
+.all-notes__note-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.all-notes__note {
+  padding: 14px 16px;
+  border-top: 1px solid var(--color-black-10, #ebebeb);
+}
+
+.all-notes__note-meta {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.all-notes__note-page {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-black-60);
+}
+
+.all-notes__note-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-black);
+}
+
+.all-notes__note-date {
+  margin-left: auto;
+  font-size: var(--font-size-sm);
+  color: var(--color-black-40, #999);
+}
+
+.all-notes__note-content {
+  margin: 0 0 10px;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-black);
+  /* Show up to 3 lines with an ellipsis */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.all-notes__note-link {
+  font-size: var(--font-size-sm);
+  color: var(--color-black);
+  font-weight: var(--font-weight-medium);
+  text-decoration: underline;
+}
+
+.all-notes__note-link:hover {
+  opacity: 0.7;
+}

@@ -67,6 +67,13 @@ class ApiClient {
       }
       const error = new Error(message);
       error.status = response.status;
+
+      // Notify the app that the session has expired so it can auto-logout.
+      // Using a custom event decouples ApiClient from React state.
+      if (response.status === 401) {
+        window.dispatchEvent(new CustomEvent("auth:expired"));
+      }
+
       throw error;
     }
 

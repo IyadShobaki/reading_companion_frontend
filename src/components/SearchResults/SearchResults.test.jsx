@@ -137,6 +137,37 @@ describe("SearchResults", () => {
 
     await act(() => vi.runAllTimersAsync());
 
-    expect(booksService.search).toHaveBeenCalledWith("clean code");
+    expect(booksService.search).toHaveBeenCalledWith("clean code", {
+      maxResults: 12,
+      startIndex: 0,
+    });
+  });
+
+  it("shows the Load more button when a full batch is returned", async () => {
+    // Return exactly BATCH_SIZE (12) books so hasMore becomes true
+    const fullBatch = Array.from({ length: 12 }, (_, i) => ({
+      ...MOCK_BOOK,
+      googleBookId: `vol${i}`,
+      title: `Book ${i}`,
+    }));
+    booksService.search.mockResolvedValue(fullBatch);
+    renderAt("?q=react");
+
+    await act(() => vi.runAllTimersAsync());
+
+    expect(
+      screen.getByRole("button", { name: /load more/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("does not show the Load more button when fewer than 12 results are returned", async () => {
+    booksService.search.mockResolvedValue([MOCK_BOOK]);
+    renderAt("?q=singlebook");
+
+    await act(() => vi.runAllTimersAsync());
+
+    expect(
+      screen.queryByRole("button", { name: /load more/i }),
+    ).not.toBeInTheDocument();
   });
 });

@@ -18,3 +18,33 @@
 .search-results__message_error {
   color: var(--color-error);
 }
+
+/* ── Load-more control ──────────────────────────────────────────────────── */
+
+.search-results__load-more {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0 0;
+}
+
+.search-results__load-more-btn {
+  padding: 12px 32px;
+  background-color: var(--color-black);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.search-results__load-more-btn:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+.search-results__load-more-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

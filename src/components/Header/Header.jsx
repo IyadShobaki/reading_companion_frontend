@@ -106,6 +106,9 @@ function Header({ handleLoginClick, handleRegisterClick, isLoggedIn }) {
             <NavLink className="header__nav-link" to="/library">
               My Library
             </NavLink>
+            <NavLink className="header__nav-link" to="/notes">
+              My Notes
+            </NavLink>
             <NavLink className="header__nav-link" to="/profile">
               <div className="header__user-container">
                 <p className="header__username">{username}</p>

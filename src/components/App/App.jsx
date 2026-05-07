@@ -14,6 +14,9 @@ import Profile from "../Profile/Profile";
 import Library from "../Library/Library";
 import SearchResults from "../SearchResults/SearchResults";
 import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
+import NotFound from "../NotFound/NotFound";
+import AllNotes from "../AllNotes/AllNotes";
+import { ToastProvider } from "../Toast/ToastProvider";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 import { LibraryContext } from "../../contexts/LibraryContext";
 import { useAuth } from "../../hooks/useAuth";
@@ -24,7 +27,12 @@ import { useUser } from "../../hooks/useUser";
 // Root application component.
 // Owns auth state (via useAuth), modal state (via useModal), and routing logic.
 // Passes data down through context and props rather than a global state library.
-function App() {
+//
+// Split into two components so that ToastProvider is mounted before any hook
+// that calls useToast() (e.g. useLibrary, useNotes via Reader).
+// AppShell provides the provider; AppInner holds all the stateful logic.
+
+function AppInner() {
   const navigate = useNavigate();
   const location = useLocation();
   // Destructure to stable individual references so hook dep arrays are precise
@@ -53,6 +61,9 @@ function App() {
   // both are useCallback with [] deps so their identities never change.
   const { fetchLibrary, clearLibrary } = library;
 
+  // Show a banner after automatic logout due to expired session
+  const [sessionExpired, setSessionExpired] = useState(false);
+
   // Book whose preview modal is currently open (null = closed)
   const [previewBook, setPreviewBook] = useState(null);
 
@@ -70,6 +81,7 @@ function App() {
   const redirectPath = location.state?.from?.pathname || "/";
 
   const handleLoginClick = () => {
+    setSessionExpired(false);
     openModal("login");
   };
 
@@ -108,6 +120,23 @@ function App() {
     clearError();
     clearProfileError();
   }, [closeModal, clearError, clearProfileError]);
+
+  // Listen for 401 responses dispatched by ApiClient and perform a clean logout.
+  // This covers expired tokens in any hook (library, notes, progress, AI) without
+  // each hook needing its own logout logic.
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      logout();
+      clearLibrary();
+      navigate("/");
+      setSessionExpired(true);
+    };
+
+    window.addEventListener("auth:expired", handleSessionExpired);
+    return () => {
+      window.removeEventListener("auth:expired", handleSessionExpired);
+    };
+  }, [logout, clearLibrary, navigate]);
 
   // Attempt to restore an existing session from a stored JWT on initial mount
   useEffect(() => {
@@ -157,6 +186,19 @@ function App() {
       <LibraryContext.Provider value={library}>
         <div className="page">
           <div className="page__content">
+            {sessionExpired && (
+              <div className="page__session-banner" role="alert">
+                Your session has expired. Please sign in again.
+                <button
+                  type="button"
+                  className="page__session-banner-close"
+                  aria-label="Dismiss"
+                  onClick={() => setSessionExpired(false)}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
             <Header
               handleLoginClick={handleLoginClick}
               handleRegisterClick={handleRegisterClick}
@@ -211,6 +253,15 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/notes"
+                element={
+                  <ProtectedRoute isLoggedIn={isLoggedIn} isLoading={isLoading}>
+                    <AllNotes />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
             </Routes>
 
             <Footer />
@@ -254,6 +305,16 @@ function App() {
         </div>
       </LibraryContext.Provider>
     </CurrentUserContext.Provider>
+  );
+}
+
+// AppShell mounts ToastProvider so that AppInner and all its hooks
+// (useLibrary → useToast, Reader → useToast, etc.) have a real context value.
+function App() {
+  return (
+    <ToastProvider>
+      <AppInner />
+    </ToastProvider>
   );
 }
 

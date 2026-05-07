@@ -6,6 +6,7 @@ import NotesPanel from "../NotesPanel/NotesPanel";
 import AiPanel from "../AiPanel/AiPanel";
 import { booksService } from "../../services/books.service";
 import { useProgress } from "../../hooks/useProgress";
+import { useToast } from "../../hooks/useToast";
 import "./Reader.css";
 
 /**
@@ -33,6 +34,7 @@ function Reader() {
   const { bookId } = useParams();
 
   const { loadProgress, saveProgress } = useProgress();
+  const { showToast } = useToast();
 
   const [book, setBook] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -131,6 +133,8 @@ function Reader() {
   // ── Render ─────────────────────────────────────────────────────────────────
   const title = book?.title ?? "";
   const authors = book?.authors ?? [];
+  const description = book?.description ?? "";
+  const categories = book?.categories ?? [];
   const thumbnail = book?.thumbnail ?? "";
   const publishedDate = book?.publishedDate ?? "";
   const googleBookId = book?.googleBookId ?? "";
@@ -143,6 +147,7 @@ function Reader() {
   const handleSaveProgress = async () => {
     await saveProgress(googleBookId, pageNumber);
     setIsSaved(true);
+    showToast("Progress saved.", "success");
   };
 
   const viewerSrc = `https://books.google.com/books?id=${encodeURIComponent(googleBookId)}&pg=PA${pageNumber}&output=embed`;
@@ -299,6 +304,9 @@ function Reader() {
               googleBookId={googleBookId}
               title={title}
               currentPage={pageNumber}
+              authors={authors}
+              description={description}
+              categories={categories}
             />
           </section>
         </aside>

@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useRef } from "react";
 import { libraryService } from "../services/library.service";
+import { useToast } from "./useToast";
 
 /**
  * Manage authenticated library state and optimistic save/remove operations.
@@ -23,6 +24,7 @@ export const useLibrary = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const pendingAddIdsRef = useRef(new Set());
+  const { showToast } = useToast();
 
   /**
    * Derived list of Google Books ids for cheap saved-state lookups.
@@ -111,6 +113,7 @@ export const useLibrary = () => {
 
       try {
         await libraryService.remove(googleBookId);
+        showToast("Book removed from library.", "success");
       } catch (err) {
         setSavedBooks(snapshot);
         if (err.status === 401) {
@@ -122,7 +125,7 @@ export const useLibrary = () => {
         }
       }
     },
-    [savedBooks],
+    [savedBooks, showToast],
   );
 
   /**

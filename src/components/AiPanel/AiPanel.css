@@ -18,6 +18,36 @@
 
 /* ── Ask form ────────────────────────────────────────── */
 
+/* ── Preset prompt buttons ───────────────────────────── */
+
+.ai-panel__presets {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ai-panel__preset-btn {
+  padding: 5px 12px;
+  border: 1px solid var(--color-black-30);
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  color: var(--color-black);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.ai-panel__preset-btn:hover {
+  background-color: var(--color-black);
+  color: var(--color-white);
+}
+
+/* ── Ask form ────────────────────────────────────────── */
+
 .ai-panel__ask-form {
   display: flex;
   flex-direction: column;

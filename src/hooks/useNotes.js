@@ -22,6 +22,7 @@
 
 import { useState, useCallback } from "react";
 import { notesService } from "../services/notes.service";
+import { useToast } from "./useToast";
 
 /**
  * @returns {{
@@ -39,6 +40,7 @@ export const useNotes = () => {
   const [notes, setNotes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { showToast } = useToast();
 
   /**
    * Fetch all notes for a book from the backend.
@@ -161,6 +163,7 @@ export const useNotes = () => {
 
       try {
         await notesService.remove(noteId);
+        showToast("Note deleted.", "success");
       } catch (err) {
         // Rollback
         setNotes(snapshot);
@@ -173,7 +176,7 @@ export const useNotes = () => {
         }
       }
     },
-    [notes],
+    [notes, showToast],
   );
 
   /**
