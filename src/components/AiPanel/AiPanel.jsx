@@ -1,11 +1,8 @@
 /**
- * AiPanel — AI assistant panel for the Reader sidebar.
+ * AiPanel — AI chatbot panel for the Reader sidebar.
  *
- * Displays four AI action buttons (Summarize, Explain, Context, Ask).
- * The "Ask" action reveals a text input for the user's question.
- * Responses are displayed in a scrollable region below the controls.
- *
- * Unauthenticated users see a login prompt — no AI actions are shown.
+ * Authenticated users can type a question about the current book and
+ * receive an AI-generated answer. Unauthenticated users see a login prompt.
  *
  * All state is managed by useAiPanel — the component is purely presentational
  * relative to the hook.
@@ -17,49 +14,25 @@
 
 import { useContext } from "react";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
-import { useAiPanel, AI_ACTIONS } from "../../hooks/useAiPanel";
+import { useAiPanel } from "../../hooks/useAiPanel";
 import Loading from "../Loading/Loading";
 import "./AiPanel.css";
-
-/** Human-readable labels for each action key. */
-const ACTION_LABELS = {
-  summarize: "Summarize",
-  explain: "Explain",
-  context: "Context",
-  ask: "Ask",
-};
 
 function AiPanel({ googleBookId, title, currentPage }) {
   const { currentUser } = useContext(CurrentUserContext);
   const isLoggedIn = Boolean(currentUser);
 
   const {
-    selectedAction,
     userInput,
     response,
     isLoading,
     error,
-    setSelectedAction,
     setUserInput,
     runAction,
     clearResponse,
   } = useAiPanel({ googleBookId, title, pageNumber: currentPage });
 
-  /**
-   * Toggle action selection — clicking the active action de-selects it and
-   * clears any existing response so the panel returns to a clean state.
-   */
-  const handleActionClick = (action) => {
-    if (selectedAction === action) {
-      setSelectedAction(null);
-      clearResponse();
-    } else {
-      setSelectedAction(action);
-      clearResponse();
-    }
-  };
-
-  const handleAskSubmit = (evt) => {
+  const handleSubmit = (evt) => {
     evt.preventDefault();
     runAction();
   };
@@ -80,64 +53,32 @@ function AiPanel({ googleBookId, title, currentPage }) {
 
   return (
     <div className="ai-panel">
-      {/* Action selector buttons */}
-      <div className="ai-panel__actions" role="group" aria-label="AI actions">
-        {AI_ACTIONS.map((action) => (
-          <button
-            key={action}
-            type="button"
-            className={`ai-panel__action-btn${
-              selectedAction === action ? " ai-panel__action-btn_active" : ""
-            }`}
-            onClick={() => handleActionClick(action)}
-            aria-pressed={selectedAction === action}
-          >
-            {ACTION_LABELS[action]}
-          </button>
-        ))}
-      </div>
-
-      {/* Question input — only shown when "Ask" is selected */}
-      {selectedAction === "ask" && (
-        <form
-          className="ai-panel__ask-form"
-          onSubmit={handleAskSubmit}
-          aria-label="Ask a question"
-        >
-          <label htmlFor="ai-question" className="ai-panel__ask-label">
-            Your question
-            <textarea
-              id="ai-question"
-              className="ai-panel__ask-input"
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              placeholder="What would you like to know about this book?"
-              rows={3}
-              aria-label="Your question"
-            />
-          </label>
-          <button
-            type="submit"
-            className="ai-panel__submit-btn"
-            disabled={isLoading || !userInput.trim()}
-          >
-            {isLoading ? "Thinking…" : "Ask"}
-          </button>
-        </form>
-      )}
-
-      {/* Run button for non-Ask actions */}
-      {selectedAction && selectedAction !== "ask" && (
+      {/* Question input */}
+      <form
+        className="ai-panel__ask-form"
+        onSubmit={handleSubmit}
+        aria-label="Ask a question"
+      >
+        <label htmlFor="ai-question" className="ai-panel__ask-label">
+          Ask about this book
+          <textarea
+            id="ai-question"
+            className="ai-panel__ask-input"
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            placeholder="What would you like to know about this book?"
+            rows={3}
+            aria-label="Your question"
+          />
+        </label>
         <button
-          type="button"
+          type="submit"
           className="ai-panel__submit-btn"
-          onClick={runAction}
-          disabled={isLoading}
-          aria-label={`Run ${ACTION_LABELS[selectedAction]}`}
+          disabled={isLoading || !userInput.trim()}
         >
-          {isLoading ? "Thinking…" : ACTION_LABELS[selectedAction]}
+          {isLoading ? "Thinking…" : "Ask"}
         </button>
-      )}
+      </form>
 
       {/* Loading indicator */}
       {isLoading && (
@@ -170,13 +111,6 @@ function AiPanel({ googleBookId, title, currentPage }) {
             Clear
           </button>
         </div>
-      )}
-
-      {/* Placeholder when no action is selected */}
-      {!selectedAction && !response && !error && (
-        <p className="ai-panel__hint">
-          Select an action above to get AI insights about this book.
-        </p>
       )}
     </div>
   );

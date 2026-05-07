@@ -16,35 +16,6 @@
   padding: 16px 0;
 }
 
-/* ── Action selector buttons ─────────────────────────── */
-
-.ai-panel__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.ai-panel__action-btn {
-  border: 1px solid var(--color-black-30);
-  border-radius: var(--radius-sm);
-  padding: 4px 12px;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  background: none;
-  color: var(--color-black-60);
-  font-family: inherit;
-  transition:
-    background-color 0.15s,
-    color 0.15s;
-}
-
-.ai-panel__action-btn_active {
-  background-color: var(--color-black);
-  border-color: var(--color-black);
-  color: var(--color-white);
-}
-
 /* ── Ask form ────────────────────────────────────────── */
 
 .ai-panel__ask-form {
