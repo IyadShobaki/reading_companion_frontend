@@ -257,6 +257,38 @@
   }
 
   .reader__viewer {
+    height: 480px;
     min-height: 320px;
+  }
+}
+
+@media (max-width: 768px) {
+  .reader__viewer {
+    height: 380px;
+  }
+
+  .reader__controls {
+    gap: 8px;
+    padding: 8px 12px;
+  }
+
+  .reader__go-to-form {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .reader__viewer {
+    height: 300px;
+  }
+
+  .reader__cover {
+    display: none;
+  }
+
+  .reader__header {
+    padding: 10px 12px;
   }
 }

@@ -21,15 +21,15 @@ Google controls which books can be embedded. Books with no embeddable preview or
 
 ## Tech Stack
 
-| Technology | Role |
-| ---------- | ---- |
-| React 19 | UI library |
-| React Router 7 | Client-side routing |
-| Vite 8 | Build tool and dev server |
-| Vanilla CSS with BEM | Component styling |
-| Google Books API | Discovery data |
-| Google Books iframe embed | In-app reading |
-| Vitest and Testing Library | Frontend tests |
+| Technology                 | Role                      |
+| -------------------------- | ------------------------- |
+| React 19                   | UI library                |
+| React Router 7             | Client-side routing       |
+| Vite 8                     | Build tool and dev server |
+| Vanilla CSS with BEM       | Component styling         |
+| Google Books API           | Discovery data            |
+| Google Books iframe embed  | In-app reading            |
+| Vitest and Testing Library | Frontend tests            |
 
 Current documented test baseline: 40 Vitest files, 402 tests.
 
@@ -42,7 +42,7 @@ npm install
 Create `.env` from `.env.example`:
 
 ```env
-VITE_API_BASE_URL=http://localhost:3001
+VITE_API_BASE_URL=http://localhost:3001/api
 VITE_GOOGLE_BOOKS_API_KEY=your_google_books_api_key_here
 ```
 

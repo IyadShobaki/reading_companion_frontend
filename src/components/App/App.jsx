@@ -111,7 +111,8 @@ function AppInner() {
   const handleLogout = useCallback(() => {
     logout();
     clearLibrary();
-  }, [logout, clearLibrary]);
+    navigate("/");
+  }, [logout, clearLibrary, navigate]);
 
   // Memoised so the Escape/overlay effect does not re-register on every render.
   // Also clears any server error so stale messages don't linger between opens.
@@ -142,6 +143,16 @@ function AppInner() {
   useEffect(() => {
     restoreSession();
   }, [restoreSession]);
+
+  // When a user was redirected here from a protected route (ProtectedRoute sets
+  // location.state.from), open the login modal once session restoration finishes
+  // and it is confirmed the user is not logged in.
+  const fromPath = location.state?.from?.pathname;
+  useEffect(() => {
+    if (!isLoading && !isLoggedIn && fromPath) {
+      openModal("login");
+    }
+  }, [isLoading, isLoggedIn, fromPath, openModal]);
 
   // Fetch the library whenever the user becomes authenticated (login, registration,
   // or session restoration) and clear it when they sign out.
