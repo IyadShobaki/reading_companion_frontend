@@ -37,7 +37,7 @@ function Reader() {
   const { showToast } = useToast();
 
   const [book, setBook] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [goToPageInput, setGoToPageInput] = useState("");
@@ -48,11 +48,11 @@ function Reader() {
 
     let cancelled = false;
 
-    // Canonical async data-fetching pattern: set loading flag before the
-    // async call so the UI shows a spinner immediately.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsLoading(true);
-    setError(null);
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setIsLoading(true);
+      setError(null);
+    });
 
     booksService
       .getById(decodeURIComponent(bookId))
@@ -161,6 +161,7 @@ function Reader() {
             className="reader__cover"
             src={thumbnail}
             alt={`Cover of ${title}`}
+            loading="lazy"
           />
         )}
         <div className="reader__meta">

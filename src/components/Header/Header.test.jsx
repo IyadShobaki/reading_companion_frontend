@@ -108,6 +108,23 @@ describe("Header — guest vs authenticated nav", () => {
       screen.queryByRole("button", { name: /log in/i }),
     ).not.toBeInTheDocument();
   });
+
+  it("shows a log out button when the user is logged in", () => {
+    renderHeader({ currentUser: MOCK_USER, isLoggedIn: true });
+    expect(
+      screen.getByRole("button", { name: /log out/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("calls the logout handler from the authenticated nav", async () => {
+    const user = userEvent.setup();
+    const onLogout = vi.fn();
+    renderHeader({ currentUser: MOCK_USER, isLoggedIn: true, onLogout });
+
+    await user.click(screen.getByRole("button", { name: /log out/i }));
+
+    expect(onLogout).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("Header search", () => {

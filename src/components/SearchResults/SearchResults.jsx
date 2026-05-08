@@ -54,21 +54,25 @@ function SearchResults({
 
     // Nothing to fetch if the query is empty.
     if (!trimmed) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setBooks([]);
-      setError(null);
-      setIsLoading(false);
-      setStartIndex(0);
-      setHasMore(false);
+      queueMicrotask(() => {
+        setBooks([]);
+        setError(null);
+        setIsLoading(false);
+        setStartIndex(0);
+        setHasMore(false);
+      });
       return;
     }
 
     let cancelled = false;
 
-    setIsLoading(true);
-    setError(null);
-    setStartIndex(0);
-    setHasMore(false);
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setIsLoading(true);
+      setError(null);
+      setStartIndex(0);
+      setHasMore(false);
+    });
 
     booksService
       .search(trimmed, { maxResults: BATCH_SIZE, startIndex: 0 })

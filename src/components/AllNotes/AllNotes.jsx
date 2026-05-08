@@ -44,9 +44,7 @@ function AllNotes() {
       }
       setTitles((prev) => ({ ...prev, ...updates }));
     });
-    // We only want this to run when groupedNotes changes — titles is stale-closed intentionally
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groupedNotes]);
+  }, [groupedNotes, titles]);
 
   const toggleSection = (id) =>
     setOpen((prev) => ({ ...prev, [id]: !prev[id] }));

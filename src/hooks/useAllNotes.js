@@ -55,8 +55,15 @@ export function useAllNotes() {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    return load();
+    let cleanup = () => {};
+    const timeoutId = setTimeout(() => {
+      cleanup = load();
+    }, 0);
+
+    return () => {
+      clearTimeout(timeoutId);
+      cleanup();
+    };
   }, [load]);
 
   return { groupedNotes, isLoading, error, refetch: load };

@@ -13,10 +13,17 @@ const currentDate = new Date().toLocaleString("default", {
   day: "numeric",
 });
 
+const noop = () => {};
+
 // Top navigation bar. Renders auth buttons for guests or a profile link for
 // logged-in users. The mobile nav closes automatically on route change.
 // Includes a search form that navigates to /search?q=… on submission.
-function Header({ handleLoginClick, handleRegisterClick, isLoggedIn }) {
+function Header({
+  handleLoginClick,
+  handleRegisterClick,
+  isLoggedIn,
+  onLogout = noop,
+}) {
   const { currentUser } = useContext(CurrentUserContext);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -119,6 +126,13 @@ function Header({ handleLoginClick, handleRegisterClick, isLoggedIn }) {
                 />
               </div>
             </NavLink>
+            <button
+              type="button"
+              className="header__logout-btn"
+              onClick={onLogout}
+            >
+              Log out
+            </button>
           </>
         )}
       </nav>

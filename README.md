@@ -1,6 +1,6 @@
 # Reading Companion - Frontend
 
-React single-page application for Reading Companion. The frontend lets users discover books through Google Books, preview and read embeddable books, manage a saved library, save reading progress, write per-book notes, and use a Gemini-backed AI assistant in the reader.
+React single-page application for Reading Companion. The frontend lets users discover books through Google Books, preview and read embeddable books, manage a saved library, save reading progress, write per-book notes, and use an OpenAI-backed AI assistant in the reader.
 
 ## Features
 
@@ -31,7 +31,7 @@ Google controls which books can be embedded. Books with no embeddable preview or
 | Google Books iframe embed  | In-app reading            |
 | Vitest and Testing Library | Frontend tests            |
 
-Current documented test baseline: 40 Vitest files, 402 tests.
+Current documented test baseline: 42 Vitest files, 405 tests.
 
 ## Setup
 

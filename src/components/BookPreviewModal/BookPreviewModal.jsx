@@ -104,6 +104,7 @@ function BookPreviewModal({
                 src={thumbnail}
                 alt={`Cover of ${title}`}
                 className="book-preview-modal__cover"
+                loading="lazy"
               />
             ) : (
               <div

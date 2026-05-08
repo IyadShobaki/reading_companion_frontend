@@ -17,6 +17,7 @@ export function useBookSection(sectionKey) {
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [loadedSectionKey, setLoadedSectionKey] = useState(sectionKey);
 
   useEffect(() => {
     // Cancellation flag — prevents state updates on an unmounted component
@@ -27,20 +28,19 @@ export function useBookSection(sectionKey) {
 
     // Cache hit: populate from localStorage without a network request.
     if (cached) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setBooks(cached);
-      setIsLoading(false);
-      setError(null);
+      queueMicrotask(() => {
+        if (cancelled) return;
+        setBooks(cached);
+        setLoadedSectionKey(sectionKey);
+        setIsLoading(false);
+        setError(null);
+      });
       return () => {
         cancelled = true;
       };
     }
 
     // Cache miss or expired: fetch from the network.
-    // Canonical async data-fetching pattern: set loading flag synchronously
-    // before the async call so the UI reflects the in-flight state.
-    setIsLoading(true);
-    setError(null);
 
     booksService
       .fetchSection(sectionKey)
@@ -48,6 +48,8 @@ export function useBookSection(sectionKey) {
         if (!cancelled) {
           setCached(cacheKey, data);
           setBooks(data);
+          setLoadedSectionKey(sectionKey);
+          setError(null);
         }
       })
       .catch((err) => {
@@ -62,5 +64,9 @@ export function useBookSection(sectionKey) {
     };
   }, [sectionKey]);
 
-  return { books, isLoading, error };
+  return {
+    books,
+    isLoading: isLoading || loadedSectionKey !== sectionKey,
+    error,
+  };
 }

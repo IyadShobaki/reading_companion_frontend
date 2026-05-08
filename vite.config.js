@@ -6,7 +6,7 @@ export default defineConfig({
   base: "/",
   plugins: [react()],
   server: {
-    port: 3000,
+    port: 3001,
   },
   test: {
     // Use jsdom to simulate browser globals (window, document, fetch, etc.)

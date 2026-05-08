@@ -66,6 +66,7 @@ function BookCard({
           src={thumbnail}
           alt={`Cover of ${title}`}
           className="book-card__cover"
+          loading="lazy"
         />
       ) : (
         // Decorative placeholder shown when no thumbnail URL is available

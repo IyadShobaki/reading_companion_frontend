@@ -217,6 +217,7 @@ function AppInner() {
             <Header
               handleLoginClick={handleLoginClick}
               handleRegisterClick={handleRegisterClick}
+              onLogout={handleLogout}
               isLoggedIn={isLoggedIn}
             />
             <Routes>
