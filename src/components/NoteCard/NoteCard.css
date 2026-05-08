@@ -5,13 +5,14 @@
   flex-direction: column;
   gap: 8px;
   padding: 12px;
-  border: 1px solid var(--color-black-20);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background: var(--color-white);
+  background: var(--color-surface);
+  transition: box-shadow 0.2s;
 }
 
 .note-card_editing {
-  border-color: var(--color-black-40);
+  border-color: var(--color-accent);
 }
 
 /* ── Header row: page badge + title + action buttons ─── */

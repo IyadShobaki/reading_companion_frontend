@@ -18,20 +18,11 @@
   height: 56px;
   border-radius: var(--radius-round);
 }
-
-.sidebar__avatar_none {
-  height: 56px;
+/* Placeholder circle sizing — circle/color styling lives in UserAvatar.css */
+.sidebar__avatar.user-avatar__placeholder {
   width: 56px;
-  background-color: var(--color-black-40);
-  border: 2px solid var(--color-black-20);
-  border-radius: var(--radius-round);
-  color: var(--color-white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 56px;
   font-size: var(--font-size-lg);
-  line-height: var(--line-height-lg);
-  font-weight: var(--font-weight-bold);
 }
 
 .sidebar__actions {
@@ -57,8 +48,8 @@
     justify-content: flex-end;
     gap: 20px;
     align-items: normal;
-    border-top: 1px solid var(--color-black-30);
-    border-bottom: 1px solid var(--color-black-30);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
     padding: 20px 0;
   }
 }

@@ -4,9 +4,11 @@
 }
 
 .search-results__heading {
-  font-size: var(--font-size-xl, 1.5rem);
-  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-heading);
+  font-size: 32px;
+  font-weight: 600;
   margin: 0 0 24px;
+  color: var(--color-black);
 }
 
 .search-results__message {
@@ -29,19 +31,20 @@
 
 .search-results__load-more-btn {
   padding: 12px 32px;
-  background-color: var(--color-black);
+  background-color: var(--color-accent);
   color: var(--color-white);
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-bold);
   font-family: var(--font-family);
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: background-color 0.2s;
 }
 
 .search-results__load-more-btn:hover:not(:disabled) {
-  opacity: 0.8;
+  background-color: var(--color-accent-hover);
+  opacity: 1;
 }
 
 .search-results__load-more-btn:disabled {

@@ -3,10 +3,14 @@
 }
 
 .book-section__title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  margin: 0 0 16px;
+  font-family: var(--font-family-heading);
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 20px;
   color: var(--color-black);
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--color-accent);
+  display: inline-block;
 }
 
 /* Loading indicator container — centred with a minimum height so the

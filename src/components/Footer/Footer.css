@@ -1,12 +1,15 @@
 .footer {
   display: flex;
   justify-content: space-between;
-  padding: 80px 2px 24px 0;
+  padding: 48px 2px 24px 0;
+  border-top: 1px solid var(--color-border);
+  margin-top: 40px;
 }
 
 .footer__text {
   margin: 0;
   font-weight: var(--font-weight-medium);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   line-height: var(--line-height-base);
+  color: var(--color-muted);
 }

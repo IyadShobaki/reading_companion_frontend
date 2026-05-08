@@ -1,11 +1,23 @@
 .book-card {
-  background-color: var(--color-white);
-  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-sm);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 8px var(--color-black-20);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border);
   height: 100%;
+  width: 300px;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.book-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 12px rgba(44, 26, 14, 0.12),
+    0 8px 24px rgba(44, 26, 14, 0.08);
 }
 
 /* ---------- Cover image ---------- */
@@ -21,7 +33,7 @@
 .book-card__cover-placeholder {
   width: 100%;
   aspect-ratio: 2 / 3;
-  background-color: var(--color-black-20);
+  background-color: rgba(44, 26, 14, 0.06);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,18 +62,21 @@
 }
 
 .book-card__title {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-heading);
+  font-size: 14px;
+  font-weight: 600;
   margin: 0;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  line-height: 1.35;
+  color: var(--color-black);
 }
 
 .book-card__authors {
   font-size: var(--font-size-sm);
-  color: var(--color-black-60);
+  color: var(--color-muted);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -102,19 +117,30 @@
 }
 
 .book-card__btn:focus-visible {
-  outline: 2px solid var(--color-black);
+  outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
 
-/* Primary — filled dark button ("Start Reading") */
+/* Primary — filled accent button */
 .book-card__btn_primary {
-  background-color: var(--color-black);
+  background-color: var(--color-accent);
   color: var(--color-white);
 }
 
-/* Secondary — outlined button ("Add to Library" / "Remove") */
+.book-card__btn_primary:hover {
+  opacity: 1;
+  background-color: var(--color-accent-hover);
+}
+
+/* Secondary — outlined button */
 .book-card__btn_secondary {
   background-color: transparent;
   color: var(--color-black);
-  border: 1px solid var(--color-black);
+  border: 1.5px solid var(--color-border);
+}
+
+.book-card__btn_secondary:hover {
+  opacity: 1;
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }

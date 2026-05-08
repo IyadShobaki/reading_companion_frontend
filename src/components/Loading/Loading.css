@@ -14,20 +14,20 @@
 
 .loading-compact {
   font-size: 2rem;
-  color: var(--color-white);
+  color: var(--color-muted);
   position: absolute;
   top: 20px;
   left: 16px;
 }
 .loading-inline {
   font-size: 2rem;
-  color: var(--color-black);
+  color: var(--color-accent);
   margin: 0 0 34px 20px;
   padding-top: 4px;
 }
 .loading-items-main {
   font-size: 2rem;
-  color: var(--color-black);
+  color: var(--color-accent);
   text-align: center;
 }
 .loading__drop {

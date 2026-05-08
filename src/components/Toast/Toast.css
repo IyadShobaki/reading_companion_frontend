@@ -21,20 +21,20 @@
   min-width: 220px;
   max-width: 360px;
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 4px 16px rgba(44, 26, 14, 0.25);
   font-size: var(--font-size-sm);
   font-family: var(--font-family);
-  pointer-events: all; /* re-enable for toast itself */
+  pointer-events: all;
   animation: toast-slide-in 0.2s ease;
 }
 
 .toast_success {
-  background: #1e7e34;
+  background: #3a7a44;
   color: #fff;
 }
 
 .toast_error {
-  background: var(--color-error, #d93025);
+  background: var(--color-error);
   color: #fff;
 }
 

@@ -1,84 +1,99 @@
 .header {
   display: flex;
   align-items: center;
-  padding: 32px 0 28px;
-  font-size: var(--font-size-lg);
-  line-height: var(--line-height-lg);
-  font-weight: var(--font-weight-bold);
+  padding: 20px 0 18px;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  font-weight: var(--font-weight-medium);
   position: relative;
+  border-bottom: 1.5px solid var(--color-border);
+  background-color: var(--color-bg);
+  gap: 0;
 }
-
 .header__logo {
   width: 89px;
   height: 40px;
+  flex-shrink: 0;
 }
 .header__date-and-location {
-  margin: 0 0 0 24px;
-  padding-top: 4px;
+  margin: 0 0 0 20px;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  padding-top: 2px;
+  white-space: nowrap;
 }
-
-.header__toggler {
-  margin: 0 0 0 auto;
-  display: flex;
-  gap: 20px;
-}
-
-/* Search form — sits between the date label and the nav toggle */
 .header__search-form {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0 16px 0 auto;
+  margin: 0 20px 0 auto;
 }
-
 .header__search-input {
-  height: 36px;
+  height: 34px;
   padding: 0 12px;
-  border: 1.5px solid var(--color-black);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-base);
-  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  background: var(--color-surface);
   color: var(--color-black);
   outline: none;
   width: 220px;
-  transition: border-color 0.15s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
-
+.header__search-input::placeholder {
+  color: var(--color-muted);
+}
 .header__search-input:focus {
-  border-color: var(--color-black);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.12);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(196, 96, 42, 0.12);
 }
-
 .header__search-btn {
-  height: 36px;
+  height: 34px;
   padding: 0 16px;
   background: var(--color-black);
   color: var(--color-white);
   border: none;
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
   font-weight: var(--font-weight-bold);
+  letter-spacing: 0.03em;
   cursor: pointer;
+  transition: background-color 0.2s;
   white-space: nowrap;
 }
-
 .header__search-btn:hover {
-  opacity: 0.85;
+  background-color: var(--color-accent);
 }
-
+.header__toggler {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
 .header__toggler-btn {
   display: none;
   background: none;
-  border: none;
-  background-color: var(--color-white);
-  border-radius: var(--radius-md);
-  width: 44px;
-  height: 44px;
-  font-size: 30px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
   cursor: pointer;
   position: absolute;
   right: 0;
+  color: var(--color-black);
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s;
+}
+.header__toggler-btn:hover {
+  border-color: var(--color-accent);
 }
 .header__add-clothes-btn {
   margin: 0 0 0 auto;
@@ -86,90 +101,102 @@
   padding: 0;
   cursor: pointer;
   background: none;
-  font-size: var(--font-size-lg);
-  line-height: var(--line-height-lg);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
 }
-
 .header__auth-btn {
   border: none;
-  padding: 0;
+  padding: 6px 0;
   cursor: pointer;
   background: none;
-  font-size: var(--font-size-lg);
-  line-height: var(--line-height-lg);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  transition: color 0.2s;
 }
-
 .header__login-btn {
   color: var(--color-black);
 }
-
-.header__register-btn {
-  color: var(--color-black);
+.header__login-btn:hover {
+  color: var(--color-accent);
 }
-
+.header__register-btn {
+  color: var(--color-surface);
+  background-color: var(--color-black);
+  border-radius: var(--radius-sm);
+  padding: 6px 16px;
+  font-weight: var(--font-weight-bold);
+  transition: background-color 0.2s;
+}
+.header__register-btn:hover {
+  background-color: var(--color-accent);
+}
 .header__nav-link {
   text-decoration: none;
   color: var(--color-black);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  padding: 6px 0;
+  border-bottom: 2px solid transparent;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
 }
-
+.header__nav-link:hover,
+.header__nav-link.active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
 .header__user-container {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-
 .header__logout-btn {
-  border: none;
+  border: 1.5px solid var(--color-border);
   background: none;
   cursor: pointer;
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-base);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
   color: var(--color-black);
-  padding: 8px 12px;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  transition:
+    border-color 0.2s,
+    color 0.2s;
 }
-
 .header__logout-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  color: var(--color-black);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
-
 .header__username {
   margin: 0;
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-bold);
   line-height: 1;
   white-space: nowrap;
+  color: var(--color-black);
 }
 .header__avatar {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: var(--radius-round);
+  border: 2px solid var(--color-border);
 }
-
-.header__avatar_none {
-  height: 40px;
-  width: 40px;
-  background-color: var(--color-black-40);
-  border: 2px solid var(--color-black-20);
-  border-radius: var(--radius-round);
-  color: var(--color-white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-size-lg);
-  line-height: var(--line-height-lg);
-  font-weight: var(--font-weight-bold);
+/* Placeholder circle sizing — circle/color styling lives in UserAvatar.css */
+.header__avatar.user-avatar__placeholder {
+  width: 38px;
+  height: 38px;
+  font-size: 15px;
 }
-
 @media (max-width: 830px) {
   .header {
     flex-direction: column;
     align-items: flex-start;
-    padding: 18px 0 16px;
-    gap: 32px;
+    padding: 16px 0 14px;
+    gap: 16px;
   }
   .header__logo {
     margin: 0;
@@ -179,7 +206,7 @@
     margin: 0;
   }
   .header__toggler-btn {
-    display: block;
+    display: flex;
     z-index: 2;
   }
   .header__toggler {
@@ -188,15 +215,18 @@
   .header__toggler_is-active {
     display: flex;
     position: absolute;
-    height: 208px;
-    background-color: var(--color-white);
-    z-index: 1;
+    top: 100%;
+    background-color: var(--color-surface);
+    z-index: 10;
     width: 100%;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 24px;
+    gap: 20px;
     border-radius: var(--radius-md);
+    border: 1.5px solid var(--color-border);
+    padding: 24px 0;
+    box-shadow: var(--shadow-card);
   }
   .header__add-clothes-btn {
     margin: 0;
