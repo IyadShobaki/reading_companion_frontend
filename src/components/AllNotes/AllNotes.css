@@ -1,31 +1,29 @@
-/* ── All Notes page ──────────────────────────────────────────────────────── */
-
 .all-notes {
   flex-grow: 1;
-  padding: 32px 0 48px;
+  padding: 36px 0 56px;
 }
 
 .all-notes__heading {
-  font-family: var(--font-family-heading);
-  font-size: 32px;
-  font-weight: 600;
   margin: 0 0 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
   color: var(--color-black);
+  font-family: var(--font-family-heading);
+  font-size: clamp(30px, 4vw, 44px);
+  font-weight: 600;
+  line-height: 1.16;
 }
 
-.all-notes__empty {
-  font-size: var(--font-size-base);
-  color: var(--color-black-60);
+.all-notes__empty,
+.all-notes__error {
   margin: 40px 0 0;
+  color: var(--color-black-60);
+  font-size: var(--font-size-base);
 }
 
 .all-notes__error {
-  font-size: var(--font-size-base);
   color: var(--color-error);
-  margin: 40px 0 0;
 }
-
-/* ── Book group list ─────────────────────────────────────────────────────── */
 
 .all-notes__book-list {
   list-style: none;
@@ -33,49 +31,49 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .all-notes__book-section {
+  overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  overflow: hidden;
+  background: var(--color-reading-surface);
 }
-
-/* ── Collapsible book header ─────────────────────────────────────────────── */
 
 .all-notes__book-header {
   display: flex;
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 14px 16px;
-  background: rgba(44, 26, 14, 0.04);
+  padding: 15px 16px;
   border: none;
+  background: var(--color-panel);
   cursor: pointer;
-  text-align: left;
   font-family: var(--font-family);
+  text-align: left;
+  transition: background-color 0.2s;
 }
 
 .all-notes__book-header:hover {
-  background: rgba(44, 26, 14, 0.07);
+  background: #ece7dc;
 }
 
 .all-notes__book-title {
   flex: 1;
+  color: var(--color-black);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-bold);
-  color: var(--color-black);
 }
 
 .all-notes__book-count {
-  font-size: var(--font-size-sm);
   color: var(--color-black-60);
+  font-size: var(--font-size-sm);
 }
 
 .all-notes__chevron {
-  font-size: 1.1rem;
   color: var(--color-black-60);
+  font-size: 1.1rem;
   transition: transform 0.15s ease;
 }
 
@@ -87,8 +85,6 @@
   transform: rotate(-90deg);
 }
 
-/* ── Note list ───────────────────────────────────────────────────────────── */
-
 .all-notes__note-list {
   list-style: none;
   margin: 0;
@@ -96,8 +92,8 @@
 }
 
 .all-notes__note {
-  padding: 14px 16px;
-  border-top: 1px solid var(--color-black-10, #ebebeb);
+  padding: 15px 16px;
+  border-top: 1px solid var(--color-border);
 }
 
 .all-notes__note-meta {
@@ -109,42 +105,43 @@
 }
 
 .all-notes__note-page {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-black-60);
+  color: var(--color-secondary);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
 }
 
 .all-notes__note-title {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
   color: var(--color-black);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
 }
 
 .all-notes__note-date {
   margin-left: auto;
+  color: var(--color-black-40);
   font-size: var(--font-size-sm);
-  color: var(--color-black-40, #999);
 }
 
 .all-notes__note-content {
   margin: 0 0 10px;
-  font-size: var(--font-size-sm);
-  line-height: 1.5;
-  color: var(--color-black);
-  /* Show up to 3 lines with an ellipsis */
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
   overflow: hidden;
+  display: -webkit-box;
+  color: var(--color-black);
+  font-size: var(--font-size-sm);
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
 .all-notes__note-link {
+  color: var(--color-secondary);
   font-size: var(--font-size-sm);
-  color: var(--color-black);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-bold);
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .all-notes__note-link:hover {
-  opacity: 0.7;
+  color: var(--color-secondary-hover);
 }

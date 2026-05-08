@@ -195,7 +195,11 @@ function AppInner() {
   return (
     <CurrentUserContext.Provider value={{ currentUser }}>
       <LibraryContext.Provider value={library}>
-        <div className="page">
+        <div
+          className={`page${
+            location.pathname.startsWith("/reader/") ? " page_reader" : ""
+          }`}
+        >
           <div className="page__content">
             {sessionExpired && (
               <div className="page__session-banner" role="alert">

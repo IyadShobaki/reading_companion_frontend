@@ -48,18 +48,6 @@ function AllNotes() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupedNotes]);
 
-  // Open all sections once data loads
-  useEffect(() => {
-    if (groupedNotes.length === 0) return;
-    setOpen((prev) => {
-      const next = { ...prev };
-      for (const g of groupedNotes) {
-        if (!(g.googleBookId in next)) next[g.googleBookId] = true;
-      }
-      return next;
-    });
-  }, [groupedNotes]);
-
   const toggleSection = (id) =>
     setOpen((prev) => ({ ...prev, [id]: !prev[id] }));
 

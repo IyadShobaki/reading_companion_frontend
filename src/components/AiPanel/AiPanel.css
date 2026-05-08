@@ -1,24 +1,18 @@
-/* ── AiPanel ──────────────────────────────────────────────────────────────── */
-
 .ai-panel {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding: 18px;
 }
-
-/* ── Login prompt ────────────────────────────────────── */
 
 .ai-panel__login-prompt {
   margin: 0;
-  font-size: var(--font-size-sm);
+  padding: 18px 0;
   color: var(--color-black-60);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
   text-align: center;
-  padding: 16px 0;
 }
-
-/* ── Ask form ────────────────────────────────────────── */
-
-/* ── Preset prompt buttons ───────────────────────────── */
 
 .ai-panel__presets {
   display: flex;
@@ -27,27 +21,26 @@
 }
 
 .ai-panel__preset-btn {
-  padding: 5px 12px;
+  padding: 6px 11px;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  background: var(--color-reading-surface);
   color: var(--color-black);
-  font-size: var(--font-size-sm);
-  font-family: var(--font-family);
-  font-weight: var(--font-weight-medium);
   cursor: pointer;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   transition:
     background-color 0.15s ease,
+    border-color 0.15s ease,
     color 0.15s ease;
 }
 
 .ai-panel__preset-btn:hover {
-  background-color: var(--color-accent);
-  color: var(--color-white);
-  border-color: var(--color-accent);
+  background-color: rgba(73, 106, 129, 0.08);
+  border-color: var(--color-secondary);
+  color: var(--color-secondary);
 }
-
-/* ── Ask form ────────────────────────────────────────── */
 
 .ai-panel__ask-form {
   display: flex;
@@ -58,47 +51,49 @@
 .ai-panel__ask-label {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
+  color: var(--color-black-60);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--color-black-60);
 }
 
 .ai-panel__ask-input {
-  border: 1.5px solid var(--color-border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  padding: 6px 8px;
-  font-size: var(--font-size-sm);
-  font-family: inherit;
-  resize: vertical;
-  background: var(--color-surface);
+  padding: 8px 9px;
+  background: var(--color-white);
   color: var(--color-black);
-  transition: border-color 0.2s;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  resize: vertical;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .ai-panel__ask-input:focus {
   outline: none;
-  border-color: var(--color-accent);
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(73, 106, 129, 0.1);
 }
-
-/* ── Run / Ask submit button ─────────────────────────── */
 
 .ai-panel__submit-btn {
   align-self: flex-start;
   border: none;
   border-radius: var(--radius-sm);
-  padding: 6px 16px;
+  padding: 8px 16px;
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  cursor: pointer;
+  font-family: inherit;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
-  cursor: pointer;
-  background-color: var(--color-accent);
-  color: var(--color-white);
-  font-family: inherit;
   transition: background-color 0.2s;
 }
 
 .ai-panel__submit-btn:hover:not(:disabled) {
-  background-color: var(--color-accent-hover);
+  background-color: var(--color-secondary-hover);
 }
 
 .ai-panel__submit-btn:disabled {
@@ -106,25 +101,21 @@
   cursor: not-allowed;
 }
 
-/* ── Error ───────────────────────────────────────────── */
-
 .ai-panel__error {
   margin: 0;
-  font-size: var(--font-size-sm);
   color: var(--color-error);
+  font-size: var(--font-size-sm);
 }
-
-/* ── Response area ───────────────────────────────────── */
 
 .ai-panel__response {
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding: 12px;
-  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-card);
+  background: var(--color-reading-surface);
+  box-shadow: 0 1px 2px rgba(23, 23, 23, 0.04);
 }
 
 .ai-panel__response-text {
@@ -138,22 +129,25 @@
 .ai-panel__clear-btn {
   align-self: flex-end;
   border: none;
-  padding: 2px 8px;
   border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
+  padding: 2px 8px;
   background: none;
   color: var(--color-black-60);
+  cursor: pointer;
   font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
-/* ── Hint text ───────────────────────────────────────── */
+.ai-panel__clear-btn:hover {
+  color: var(--color-secondary);
+}
 
 .ai-panel__hint {
   margin: 0;
-  font-size: var(--font-size-sm);
   color: var(--color-black-60);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
 }

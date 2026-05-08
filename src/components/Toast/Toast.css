@@ -21,7 +21,7 @@
   min-width: 220px;
   max-width: 360px;
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 16px rgba(44, 26, 14, 0.25);
+  box-shadow: 0 16px 44px rgba(23, 23, 23, 0.22);
   font-size: var(--font-size-sm);
   font-family: var(--font-family);
   pointer-events: all;
@@ -29,7 +29,7 @@
 }
 
 .toast_success {
-  background: #3a7a44;
+  background: var(--color-secondary);
   color: #fff;
 }
 

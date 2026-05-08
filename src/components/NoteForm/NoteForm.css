@@ -1,58 +1,60 @@
-/* ── NoteForm ─────────────────────────────────────────────────────────────── */
-
 .note-form {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-reading-surface);
 }
 
-/* Row containing page + title inputs side by side */
 .note-form__row {
   display: flex;
   gap: 10px;
   align-items: flex-end;
 }
 
-/* Label wraps its input — provides accessible pairing */
 .note-form__label {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
+  color: var(--color-black-60);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--color-black-60);
 }
 
-/* Title label should expand to fill available space */
 .note-form__label_grow {
   flex: 1;
 }
 
-/* Shared base for text inputs */
-.note-form__input {
-  border: 1px solid var(--color-black-30);
+.note-form__input,
+.note-form__textarea {
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  padding: 6px 8px;
-  font-size: var(--font-size-sm);
-  font-family: inherit;
+  padding: 7px 9px;
   background: var(--color-white);
   color: var(--color-black);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
-/* Narrow width for page number */
+.note-form__input:focus,
+.note-form__textarea:focus {
+  outline: none;
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(73, 106, 129, 0.1);
+}
+
 .note-form__input_page {
   width: 64px;
 }
 
 .note-form__textarea {
-  border: 1px solid var(--color-black-30);
-  border-radius: var(--radius-sm);
-  padding: 6px 8px;
-  font-size: var(--font-size-sm);
-  font-family: inherit;
   resize: vertical;
-  background: var(--color-white);
-  color: var(--color-black);
+  line-height: 1.5;
 }
 
 .note-form__textarea_error {
@@ -61,11 +63,10 @@
 
 .note-form__error {
   margin: 0;
-  font-size: var(--font-size-sm);
   color: var(--color-error);
+  font-size: var(--font-size-sm);
 }
 
-/* Action row */
 .note-form__actions {
   display: flex;
   gap: 8px;
@@ -74,11 +75,12 @@
 .note-form__btn {
   border: none;
   border-radius: var(--radius-sm);
-  padding: 6px 16px;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
   cursor: pointer;
   font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  min-height: 34px;
+  padding: 7px 14px;
 }
 
 .note-form__btn:disabled {
@@ -87,12 +89,12 @@
 }
 
 .note-form__btn_primary {
-  background-color: var(--color-black);
+  background-color: var(--color-secondary);
   color: var(--color-white);
 }
 
 .note-form__btn_secondary {
   background-color: transparent;
   color: var(--color-black);
-  border: 1px solid var(--color-black-30);
+  border: 1px solid var(--color-border);
 }

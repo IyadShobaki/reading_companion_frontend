@@ -1,31 +1,30 @@
 .book-section {
-  margin-bottom: 40px;
+  margin-bottom: 48px;
 }
 
 .book-section__title {
-  font-family: var(--font-family-heading);
-  font-size: 22px;
-  font-weight: 600;
-  margin: 0 0 20px;
-  color: var(--color-black);
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--color-accent);
   display: inline-block;
+  margin: 0 0 22px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--color-accent);
+  color: var(--color-black);
+  font-family: var(--font-family-heading);
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.18;
 }
 
-/* Loading indicator container — centred with a minimum height so the
-   page does not collapse while content is being fetched */
 .book-section__loading {
-  min-height: 200px;
+  min-height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--color-black);
 }
 
-/* Error message — uses the project's error colour token */
 .book-section__error {
-  min-height: 100px;
+  min-height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,9 +33,8 @@
   margin: 0;
 }
 
-/* Empty state — muted text centred in a reserved height area */
 .book-section__empty {
-  min-height: 100px;
+  min-height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
