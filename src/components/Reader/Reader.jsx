@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 
 import Loading from "../Loading/Loading";
@@ -43,6 +43,29 @@ function Reader() {
   const [goToPageInput, setGoToPageInput] = useState("");
   const [isSaved, setIsSaved] = useState(false);
 
+  /**
+   * Last page number confirmed saved to backend (or localStorage).
+   * null = no progress found (API returned 404).
+   */
+  const [savedPage, setSavedPage] = useState(null);
+
+  /** Which side panel is currently open — null means no panel. */
+  const [activePanel, setActivePanel] = useState(null); // null | "notes" | "ai"
+
+  /** Toggle a panel open/closed; opening one closes the other. */
+  const togglePanel = useCallback((panel) => {
+    setActivePanel((prev) => (prev === panel ? null : panel));
+  }, []);
+
+  /** Close the active panel when the user presses Escape. */
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") setActivePanel(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   useEffect(() => {
     if (!bookId) return;
 
@@ -60,8 +83,11 @@ function Reader() {
         if (!cancelled) {
           setBook(data);
           // Resume reading — restore last saved page if one exists
-          const savedPage = await loadProgress(data.googleBookId);
-          if (savedPage) setPageNumber(savedPage);
+          const restoredPage = await loadProgress(data.googleBookId);
+          if (restoredPage) {
+            setPageNumber(restoredPage);
+            setSavedPage(restoredPage);
+          }
           setIsLoading(false);
         }
       })
@@ -147,6 +173,7 @@ function Reader() {
   const handleSaveProgress = async () => {
     await saveProgress(googleBookId, pageNumber);
     setIsSaved(true);
+    setSavedPage(pageNumber);
     showToast("Progress saved.", "success");
   };
 
@@ -181,13 +208,6 @@ function Reader() {
         <section className="reader__viewer-col" aria-label="Book viewer">
           {isReadable ? (
             <>
-              <iframe
-                className="reader__viewer"
-                title={`Reading ${title}`}
-                src={viewerSrc}
-                allowFullScreen
-              />
-
               {/* Page navigation controls */}
               <div
                 className="reader__controls"
@@ -248,7 +268,11 @@ function Reader() {
                     Go
                   </button>
                 </form>
-
+                <span className="reader__progress-indicator">
+                  {savedPage !== null
+                    ? `Saved at page ${savedPage}`
+                    : "Progress not saved"}
+                </span>
                 <button
                   type="button"
                   className={`reader__control-btn${
@@ -259,7 +283,46 @@ function Reader() {
                 >
                   {isSaved ? "Saved \u2713" : "Save Progress"}
                 </button>
+
+                {/* Panel toggle buttons */}
+                <div
+                  className="reader__panel-toggles"
+                  role="group"
+                  aria-label="Reading tools"
+                >
+                  <button
+                    type="button"
+                    className={`reader__panel-toggle${
+                      activePanel === "notes"
+                        ? " reader__panel-toggle_active"
+                        : ""
+                    }`}
+                    onClick={() => togglePanel("notes")}
+                    aria-pressed={activePanel === "notes"}
+                    aria-label="Toggle notes panel"
+                  >
+                    📝 Notes
+                  </button>
+                  <button
+                    type="button"
+                    className={`reader__panel-toggle${
+                      activePanel === "ai" ? " reader__panel-toggle_active" : ""
+                    }`}
+                    onClick={() => togglePanel("ai")}
+                    aria-pressed={activePanel === "ai"}
+                    aria-label="Toggle AI assistant panel"
+                  >
+                    ✨ AI
+                  </button>
+                </div>
               </div>
+
+              <iframe
+                className="reader__viewer"
+                title={`Reading ${title}`}
+                src={viewerSrc}
+                allowFullScreen
+              />
             </>
           ) : (
             <p className="reader__viewer-message">
@@ -281,26 +344,34 @@ function Reader() {
             </p>
           )}
         </section>
+      </div>
 
-        {/* Right: Notes and AI panels */}
-        <aside className="reader__sidebar">
-          <section
-            className="reader__panel reader__panel_notes"
-            aria-labelledby="reader-notes-heading"
+      {/* ── Sliding overlay panel ── */}
+      <div
+        className={`reader__overlay${activePanel ? " reader__overlay_open" : ""}`}
+        aria-label={
+          activePanel === "notes" ? "Notes panel" : "AI assistant panel"
+        }
+        aria-hidden={!activePanel}
+      >
+        <div className="reader__overlay-header">
+          <h2 className="reader__overlay-title">
+            {activePanel === "notes" ? "Notes" : "AI Assistant"}
+          </h2>
+          <button
+            type="button"
+            className="reader__overlay-close"
+            onClick={() => setActivePanel(null)}
+            aria-label="Close panel"
           >
-            <h2 className="reader__panel-heading" id="reader-notes-heading">
-              Notes
-            </h2>
+            ×
+          </button>
+        </div>
+        <div className="reader__overlay-body">
+          {activePanel === "notes" && (
             <NotesPanel googleBookId={googleBookId} currentPage={pageNumber} />
-          </section>
-
-          <section
-            className="reader__panel reader__panel_ai"
-            aria-labelledby="reader-ai-heading"
-          >
-            <h2 className="reader__panel-heading" id="reader-ai-heading">
-              AI Assistant
-            </h2>
+          )}
+          {activePanel === "ai" && (
             <AiPanel
               googleBookId={googleBookId}
               title={title}
@@ -309,9 +380,18 @@ function Reader() {
               description={description}
               categories={categories}
             />
-          </section>
-        </aside>
+          )}
+        </div>
       </div>
+
+      {/* Backdrop — click to close the overlay */}
+      {activePanel && (
+        <div
+          className="reader__backdrop"
+          onClick={() => setActivePanel(null)}
+          aria-hidden="true"
+        />
+      )}
     </main>
   );
 }
