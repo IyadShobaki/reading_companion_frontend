@@ -230,6 +230,8 @@ function AppInner() {
                     onPreview={handlePreview}
                     onAddToLibrary={library.addBook}
                     onRemoveFromLibrary={library.removeBook}
+                    onLoginClick={handleLoginClick}
+                    onRegisterClick={handleRegisterClick}
                   />
                 }
               />
