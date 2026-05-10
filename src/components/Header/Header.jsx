@@ -18,7 +18,7 @@ import { useContext, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import "./Header.css";
-import logo from "../../assets/images/logo.svg";
+import logo from "../../favicon.svg";
 import UserAvatar from "../UserAvatar/UserAvatar";
 
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
