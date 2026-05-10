@@ -103,48 +103,6 @@
   color: var(--color-muted);
 }
 
-.modal__radio-btns {
-  border: none;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  gap: 8px;
-}
-
-.modal__legend {
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-base);
-  color: var(--color-black);
-  margin: 0 0 12px;
-}
-.modal__label_type_radio {
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-base);
-  color: var(--color-black-50);
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.modal__label_type_radio:has(input:checked) {
-  color: var(--color-black);
-}
-
-.modal__radio-input {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
-.modal__radio-input:checked {
-  accent-color: var(--color-black);
-}
-
 .modal__button-container {
   display: flex;
   align-items: center;

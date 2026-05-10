@@ -25,14 +25,10 @@
   border: none;
   display: block;
   margin: 0;
-  border: none;
   padding: 0;
   cursor: pointer;
   background: none;
   font-size: var(--font-size-lg);
   line-height: var(--line-height-lg);
   font-weight: var(--font-weight-bold);
-}
-
-@media (max-width: 768px) {
 }
