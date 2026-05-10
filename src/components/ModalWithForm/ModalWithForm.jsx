@@ -1,3 +1,28 @@
+/**
+ * ModalWithForm — reusable modal shell for all form-based dialogs.
+ *
+ * Renders a titled, accessible modal containing a form. Features:
+ *   - Calls onSubmit only when isValid is true (blocks premature submit)
+ *   - Shows a server-side error message above the submit button when provided
+ *   - Disables and relabels the submit button while isLoading is true
+ *   - Optionally renders navigation links to switch between auth modals
+ *
+ * Accessibility: role="dialog", aria-modal="true", aria-labelledby="modal-title".
+ *
+ * @param {React.ReactNode} children             - Form fields rendered inside the <form>.
+ * @param {string}          title                - Modal heading displayed at the top.
+ * @param {string}          buttonText           - Label for the submit button.
+ * @param {string}          [loadingText]        - Label shown while isLoading is true.
+ * @param {boolean}         isOpen               - Whether the modal is visible.
+ * @param {Function}        onSubmit             - Called when the form submits and isValid.
+ * @param {Function}        onClose              - Called when the X button is clicked.
+ * @param {boolean}         isLoading            - Disables and relabels the submit button.
+ * @param {boolean}         isValid              - Prevents submit when false.
+ * @param {string}          [serverError]        - Server error message to display.
+ * @param {Function}        [onNavigateLogin]    - If provided, shows a "Log in" link.
+ * @param {Function}        [onNavigateRegister] - If provided, shows a "Sign up" link.
+ */
+
 import "./ModalWithForm.css";
 
 // Reusable modal shell for all form-based dialogs.

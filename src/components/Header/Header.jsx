@@ -1,3 +1,19 @@
+/**
+ * Header — top navigation bar.
+ *
+ * Renders the app logo with today's date, a search form that navigates to
+ * /search?q=…, and auth/profile controls:
+ *   - Guests see "Sign up" and "Log in" buttons.
+ *   - Authenticated users see a profile link with their avatar.
+ *
+ * The mobile hamburger nav closes automatically on any route change.
+ *
+ * @param {Function} handleLoginClick    - Opens the login modal.
+ * @param {Function} handleRegisterClick - Opens the register modal.
+ * @param {boolean}  isLoggedIn          - Whether the current user is authenticated.
+ * @param {Function} [onLogout]          - Called when the user clicks "Log out".
+ */
+
 import { useContext, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 

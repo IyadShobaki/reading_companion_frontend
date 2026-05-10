@@ -1,3 +1,14 @@
+/**
+ * SideBar — profile page sidebar component.
+ *
+ * Displays the authenticated user's avatar (with a first-letter placeholder
+ * fallback when no image is available), their display name, and two account
+ * action buttons: "Change profile data" and "Log out".
+ *
+ * @param {Function} onLogout          - Called when the user clicks "Log out".
+ * @param {Function} onOpenUpdateModal - Called when the user clicks "Change profile data".
+ */
+
 import "./SideBar.css";
 import { useContext } from "react";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";

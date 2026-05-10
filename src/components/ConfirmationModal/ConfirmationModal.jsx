@@ -1,3 +1,17 @@
+/**
+ * ConfirmationModal — a danger-confirmation dialog.
+ *
+ * Prompts the user to confirm an irreversible destructive action (e.g. deleting
+ * a note). Provides a labelled confirm button and a cancel button.
+ *
+ * Accessibility: role="dialog", aria-modal="true", aria-labelledby.
+ *
+ * @param {boolean}  isOpen               - Whether the modal is visible.
+ * @param {Function} onClose              - Called when the X button is clicked.
+ * @param {Function} onDeleteItem         - Called when the destructive action is confirmed.
+ * @param {Function} onCancelDeletingItem - Called when the user clicks Cancel.
+ */
+
 import "./ConfirmationModal.css";
 function ConfirmationModal({
   isOpen,
