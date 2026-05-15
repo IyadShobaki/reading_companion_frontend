@@ -214,79 +214,98 @@ function Reader() {
                 role="toolbar"
                 aria-label="Page controls"
               >
-                <button
-                  type="button"
-                  className="reader__control-btn"
-                  onClick={handlePrev}
-                  aria-label="Previous page"
+                <div
+                  className="reader__control-group reader__control-group_nav"
+                  role="group"
+                  aria-label="Page navigation"
                 >
-                  ← Prev
-                </button>
-
-                <span
-                  className="reader__page-indicator"
-                  aria-live="polite"
-                  aria-atomic="true"
-                >
-                  Page {pageNumber}
-                </span>
-
-                <button
-                  type="button"
-                  className="reader__control-btn"
-                  onClick={handleNext}
-                  aria-label="Next page"
-                >
-                  Next →
-                </button>
-
-                <form
-                  className="reader__go-to-form"
-                  onSubmit={handleGoToPage}
-                  aria-label="Go to page"
-                >
-                  <label
-                    htmlFor="reader-go-to-page"
-                    className="reader__go-to-label"
-                  >
-                    Go to
-                  </label>
-                  <input
-                    id="reader-go-to-page"
-                    type="number"
-                    className="reader__go-to-input"
-                    value={goToPageInput}
-                    onChange={(e) => setGoToPageInput(e.target.value)}
-                    min="1"
-                    aria-label="Page number"
-                  />
                   <button
-                    type="submit"
+                    type="button"
                     className="reader__control-btn"
+                    onClick={handlePrev}
+                    aria-label="Previous page"
+                  >
+                    ← Prev
+                  </button>
+
+                  <span
+                    className="reader__page-indicator"
+                    aria-live="polite"
+                    aria-atomic="true"
+                  >
+                    Page {pageNumber}
+                  </span>
+
+                  <button
+                    type="button"
+                    className="reader__control-btn"
+                    onClick={handleNext}
+                    aria-label="Next page"
+                  >
+                    Next →
+                  </button>
+                </div>
+
+                <div
+                  className="reader__control-group reader__control-group_jump"
+                  role="group"
+                  aria-label="Page jump"
+                >
+                  <form
+                    className="reader__go-to-form"
+                    onSubmit={handleGoToPage}
                     aria-label="Go to page"
                   >
-                    Go
-                  </button>
-                </form>
-                <span className="reader__progress-indicator">
-                  {savedPage !== null
-                    ? `Saved at page ${savedPage}`
-                    : "Progress not saved"}
-                </span>
-                <button
-                  type="button"
-                  className={`reader__control-btn${
-                    isSaved ? " reader__control-btn_saved" : ""
-                  }`}
-                  onClick={handleSaveProgress}
-                  aria-label={isSaved ? "Progress saved" : "Save progress"}
+                    <label
+                      htmlFor="reader-go-to-page"
+                      className="reader__go-to-label"
+                    >
+                      Go to
+                    </label>
+                    <input
+                      id="reader-go-to-page"
+                      type="number"
+                      className="reader__go-to-input"
+                      value={goToPageInput}
+                      onChange={(e) => setGoToPageInput(e.target.value)}
+                      min="1"
+                      aria-label="Page number"
+                    />
+                    <button
+                      type="submit"
+                      className="reader__control-btn"
+                      aria-label="Go to page"
+                    >
+                      Go
+                    </button>
+                  </form>
+                </div>
+
+                <div
+                  className="reader__control-group reader__control-group_progress"
+                  role="group"
+                  aria-label="Reading progress"
                 >
-                  {isSaved ? "Saved \u2713" : "Save Progress"}
-                </button>
+                  <span className="reader__progress-indicator">
+                    {savedPage !== null
+                      ? `Saved at page ${savedPage}`
+                      : "Progress not saved"}
+                  </span>
+                  <button
+                    type="button"
+                    className={`reader__control-btn${
+                      isSaved ? " reader__control-btn_saved" : ""
+                    }`}
+                    onClick={handleSaveProgress}
+                    aria-label={isSaved ? "Progress saved" : "Save progress"}
+                  >
+                    {isSaved ? "Saved \u2713" : "Save Progress"}
+                  </button>
+                </div>
 
                 {/* Panel toggle buttons */}
                 <div
-                  className="reader__panel-toggles"
+                  className="reader__control-group reader__panel-toggles"
                   role="group"
                   aria-label="Reading tools"
                 >
@@ -349,6 +368,7 @@ function Reader() {
       {/* ── Sliding overlay panel ── */}
       <div
         className={`reader__overlay${activePanel ? " reader__overlay_open" : ""}`}
+        role={activePanel ? "region" : undefined}
         aria-label={
           activePanel === "notes" ? "Notes panel" : "AI assistant panel"
         }

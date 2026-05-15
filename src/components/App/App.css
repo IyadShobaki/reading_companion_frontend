@@ -74,38 +74,30 @@
   padding: 0 var(--padding-page);
 }
 
-.page_reader {
-  background:
-    linear-gradient(180deg, rgba(232, 229, 222, 0.42), transparent 260px),
-    var(--color-bg);
-}
-
+/* Reader page: content fills full viewport width; give the shared Header
+   its own horizontal padding so it looks identical to every other page. */
 .page_reader .page__content {
   max-width: none;
   padding: 0;
 }
 
 .page_reader .header {
-  padding-left: 24px;
-  padding-right: 24px;
+  padding-left: var(--padding-page);
+  padding-right: var(--padding-page);
 }
 
 .page_reader .footer {
   display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .page__content {
     padding: 0 var(--padding-page-mobile);
   }
 
-  .page_reader .page__content {
-    padding: 0;
-  }
-
   .page_reader .header {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: var(--padding-page-mobile);
+    padding-right: var(--padding-page-mobile);
   }
 }
 

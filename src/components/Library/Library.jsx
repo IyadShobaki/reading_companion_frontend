@@ -64,7 +64,13 @@ function Library({
   return (
     <main className="library">
       <div className="library__toolbar">
-        <h1 className="library__heading">My Library</h1>
+        <div className="library__heading-group">
+          <h1 className="library__heading">My Library</h1>
+          <div className="library__stat-card">
+            <p className="library__stat-value">{savedBooks.length}</p>
+            <p className="library__stat-label">Books saved</p>
+          </div>
+        </div>
         {savedBooks.length > 1 && (
           <label htmlFor="library-sort" className="library__sort-label">
             Sort by

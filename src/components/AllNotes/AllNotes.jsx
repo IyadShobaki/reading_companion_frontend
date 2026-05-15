@@ -69,9 +69,17 @@ function AllNotes() {
     );
   }
 
+  const totalNotes = groupedNotes.reduce((sum, g) => sum + g.notes.length, 0);
+
   return (
     <main className="all-notes">
-      <h1 className="all-notes__heading">My Notes</h1>
+      <div className="all-notes__header-row">
+        <h1 className="all-notes__heading">My Notes</h1>
+        <div className="all-notes__stat-card">
+          <p className="all-notes__stat-value">{totalNotes}</p>
+          <p className="all-notes__stat-label">Notes written</p>
+        </div>
+      </div>
 
       {groupedNotes.length === 0 ? (
         <p className="all-notes__empty">

@@ -176,46 +176,12 @@
   border-bottom-color: var(--color-secondary);
 }
 
-.header__user-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header__logout-btn {
-  border: 1px solid var(--color-border);
-  background: none;
-  cursor: pointer;
-  font-size: var(--font-size-sm);
-  font-family: var(--font-family);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-black);
-  padding: 6px 12px;
-  border-radius: var(--radius-md);
-  transition:
-    border-color 0.2s,
-    color 0.2s;
-}
-
-.header__logout-btn:hover {
-  border-color: var(--color-secondary);
-  color: var(--color-secondary);
-}
-
-.header__username {
-  margin: 0;
-  color: var(--color-black);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-bold);
-  line-height: 1;
-  white-space: nowrap;
-}
-
 .header__avatar {
   width: 38px;
   height: 38px;
   border-radius: var(--radius-round);
   border: 2px solid var(--color-border);
+  transition: border-color 0.2s;
 }
 
 .header__avatar.user-avatar__placeholder {
@@ -224,7 +190,104 @@
   font-size: 15px;
 }
 
-@media (max-width: 940px) {
+/* ── Avatar dropdown menu ──────────────────────────────────────────────── */
+
+.header__avatar-menu {
+  position: relative;
+}
+
+.header__avatar-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.header__username {
+  margin: 0;
+  color: var(--color-black);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.header__avatar-trigger:hover {
+  opacity: 0.82;
+}
+
+.header__avatar-trigger:hover .header__avatar {
+  border-color: var(--color-secondary);
+}
+
+.header__avatar-trigger:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 3px;
+  border-radius: var(--radius-round);
+}
+
+.header__dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 200;
+  min-width: 168px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-reading-surface);
+  box-shadow: var(--shadow-modal);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: dropdown-in 0.15s ease;
+}
+
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header__dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 12px 18px;
+  border: none;
+  background: none;
+  color: var(--color-black);
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-align: left;
+  transition: background-color 0.15s;
+}
+
+.header__dropdown-item:hover {
+  background-color: var(--color-panel);
+}
+
+.header__dropdown-item_danger {
+  color: var(--color-error);
+}
+
+.header__dropdown-item_danger:hover {
+  background-color: rgba(178, 58, 52, 0.07);
+}
+
+@media (max-width: 800px) {
   .header {
     flex-wrap: wrap;
   }
@@ -239,22 +302,29 @@
     flex: 1;
     width: auto;
   }
+  .header__toggler {
+    margin-left: auto;
+  }
 }
 
-@media (max-width: 830px) {
+/* Mobile: single row (logo + date + hamburger), search drops to second row */
+@media (max-width: 500px) {
   .header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 16px 0 14px;
-    gap: 14px;
+    padding: 14px 0 12px;
+    gap: 10px;
+    align-items: center;
   }
 
   .header__date-and-location {
     padding: 0;
   }
 
+  /* Become a static flex item so margin-left:auto pushes it to row end */
   .header__toggler-btn {
     display: flex;
+    position: static;
+    right: unset;
+    margin-left: auto;
     z-index: 2;
   }
 
@@ -279,8 +349,43 @@
     background-color: var(--color-reading-surface);
     box-shadow: var(--shadow-card);
   }
+}
 
-  .header__user-container {
-    order: -1;
+/* Small phones: hide the date to keep row 1 compact */
+@media (max-width: 600px) {
+  .header {
+    padding: 10px 0;
+    gap: 8px;
+  }
+
+  .header__search-input {
+    font-size: var(--font-size-xs);
+  }
+
+  .header__toggler_is-active {
+    padding: 16px 0;
+    gap: 14px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 420px) {
+  .header {
+    padding: 8px 0;
+  }
+
+  .header__search-btn {
+    padding: 0 12px;
+    font-size: var(--font-size-xs);
+  }
+
+  .header__toggler-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 17px;
+  }
+
+  .header__register-btn {
+    padding: 6px 12px;
   }
 }

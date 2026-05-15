@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 
 import "./App.css";
 import Header from "../Header/Header";
@@ -10,7 +16,6 @@ import RegisterModal from "../RegisterModal/RegisterModal";
 import UpdateProfileModal from "../UpdateProfileModal/UpdateProfileModal";
 import BookPreviewModal from "../BookPreviewModal/BookPreviewModal";
 import Reader from "../Reader/Reader";
-import Profile from "../Profile/Profile";
 import Library from "../Library/Library";
 import SearchResults from "../SearchResults/SearchResults";
 import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
@@ -218,6 +223,7 @@ function AppInner() {
               handleLoginClick={handleLoginClick}
               handleRegisterClick={handleRegisterClick}
               onLogout={handleLogout}
+              onOpenUpdateModal={() => openModal("update-profile")}
               isLoggedIn={isLoggedIn}
             />
             <Routes>
@@ -262,14 +268,7 @@ function AppInner() {
               />
               <Route
                 path="/profile"
-                element={
-                  <ProtectedRoute isLoggedIn={isLoggedIn} isLoading={isLoading}>
-                    <Profile
-                      onLogout={handleLogout}
-                      onOpenUpdateModal={() => openModal("update-profile")}
-                    />
-                  </ProtectedRoute>
-                }
+                element={<Navigate to="/library" replace />}
               />
               <Route
                 path="/notes"

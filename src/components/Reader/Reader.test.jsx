@@ -282,6 +282,9 @@ describe("Reader", () => {
     booksService.getById.mockResolvedValue(MOCK_BOOK);
     renderAt("abc123");
     await act(() => vi.runAllTimersAsync());
+    await userEvent.click(
+      screen.getByRole("button", { name: /toggle notes panel/i }),
+    );
     expect(screen.getByRole("region", { name: /notes/i })).toBeInTheDocument();
   });
 
@@ -289,6 +292,9 @@ describe("Reader", () => {
     booksService.getById.mockResolvedValue(MOCK_BOOK);
     renderAt("abc123");
     await act(() => vi.runAllTimersAsync());
+    await userEvent.click(
+      screen.getByRole("button", { name: /toggle ai assistant panel/i }),
+    );
     expect(
       screen.getByRole("region", { name: /ai assistant/i }),
     ).toBeInTheDocument();

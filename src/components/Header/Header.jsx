@@ -14,7 +14,7 @@
  * @param {Function} [onLogout]          - Called when the user clicks "Log out".
  */
 
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import "./Header.css";
@@ -39,10 +39,13 @@ function Header({
   handleRegisterClick,
   isLoggedIn,
   onLogout = noop,
+  onOpenUpdateModal = noop,
 }) {
   const { currentUser } = useContext(CurrentUserContext);
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const dropdownRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -53,7 +56,27 @@ function Header({
   if (prevLocation !== location) {
     setPrevLocation(location);
     setIsNavOpen(false);
+    setIsDropdownOpen(false);
   }
+
+  // Close dropdown on outside click or Escape
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+    const handleOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    const handleKey = (e) => {
+      if (e.key === "Escape") setIsDropdownOpen(false);
+    };
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [isDropdownOpen]);
 
   const username = currentUser?.name;
   const avatar = currentUser?.avatar;
@@ -132,23 +155,53 @@ function Header({
             <NavLink className="header__nav-link" to="/notes">
               My Notes
             </NavLink>
-            <NavLink className="header__nav-link" to="/profile">
-              <div className="header__user-container">
-                <p className="header__username">{username}</p>
+            <div className="header__avatar-menu" ref={dropdownRef}>
+              <button
+                type="button"
+                className="header__avatar-trigger"
+                onClick={() => setIsDropdownOpen((o) => !o)}
+                aria-haspopup="true"
+                aria-expanded={isDropdownOpen}
+                aria-label="User menu"
+              >
+                {username && (
+                  <span className="header__username" aria-hidden="true">
+                    {username}
+                  </span>
+                )}
                 <UserAvatar
                   username={username}
                   avatar={avatar}
                   className="header__avatar"
                 />
-              </div>
-            </NavLink>
-            <button
-              type="button"
-              className="header__logout-btn"
-              onClick={onLogout}
-            >
-              Log out
-            </button>
+              </button>
+              {isDropdownOpen && (
+                <div className="header__dropdown" role="menu">
+                  <button
+                    type="button"
+                    className="header__dropdown-item"
+                    role="menuitem"
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      onOpenUpdateModal();
+                    }}
+                  >
+                    Edit Profile
+                  </button>
+                  <button
+                    type="button"
+                    className="header__dropdown-item header__dropdown-item_danger"
+                    role="menuitem"
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      onLogout();
+                    }}
+                  >
+                    Log out
+                  </button>
+                </div>
+              )}
+            </div>
           </>
         )}
       </nav>
