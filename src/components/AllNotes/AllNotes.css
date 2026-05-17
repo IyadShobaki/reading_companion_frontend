@@ -54,8 +54,16 @@
 .all-notes__empty,
 .all-notes__error {
   margin: 40px 0 0;
-  color: var(--color-black-60);
+  padding: 40px 24px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-reading-surface);
   font-size: var(--font-size-base);
+  line-height: 1.6;
+  text-align: center;
+}
+.all-notes__empty {
+  color: var(--color-black-60);
 }
 
 .all-notes__error {
