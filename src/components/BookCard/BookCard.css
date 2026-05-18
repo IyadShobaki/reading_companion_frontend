@@ -125,15 +125,6 @@
   outline-offset: 2px;
 }
 
-.book-card__btn_primary {
-  background-color: var(--color-accent);
-  color: var(--color-white);
-}
-
-.book-card__btn_primary:hover {
-  background-color: var(--color-accent-hover);
-}
-
 .book-card__btn_secondary {
   background-color: transparent;
   color: var(--color-black);
@@ -144,4 +135,13 @@
   border-color: var(--color-secondary);
   color: var(--color-secondary);
   background-color: rgba(73, 106, 129, 0.06);
+}
+
+.book-card__btn_primary {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+}
+
+.book-card__btn_primary:hover {
+  background-color: var(--color-accent-hover);
 }

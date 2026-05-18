@@ -84,12 +84,6 @@
   transform: translateY(-1px);
 }
 
-.header__toggler {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-}
-
 .header__toggler-btn {
   display: none;
   align-items: center;
@@ -114,15 +108,10 @@
   color: var(--color-secondary);
 }
 
-.header__add-clothes-btn {
-  margin: 0 0 0 auto;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  background: none;
-  font-size: var(--font-size-base);
-  font-family: var(--font-family);
-  font-weight: var(--font-weight-medium);
+.header__toggler {
+  display: flex;
+  align-items: center;
+  gap: 22px;
 }
 
 .header__auth-btn {
@@ -138,14 +127,6 @@
     color 0.2s;
 }
 
-.header__login-btn {
-  color: var(--color-black);
-}
-
-.header__login-btn:hover {
-  color: var(--color-secondary);
-}
-
 .header__register-btn {
   color: var(--color-white);
   background-color: var(--color-secondary);
@@ -156,6 +137,14 @@
 
 .header__register-btn:hover {
   background-color: var(--color-secondary-hover);
+}
+
+.header__login-btn {
+  color: var(--color-black);
+}
+
+.header__login-btn:hover {
+  color: var(--color-secondary);
 }
 
 .header__nav-link {
@@ -175,22 +164,6 @@
   color: var(--color-secondary);
   border-bottom-color: var(--color-secondary);
 }
-
-.header__avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-round);
-  border: 2px solid var(--color-border);
-  transition: border-color 0.2s;
-}
-
-.header__avatar.user-avatar__placeholder {
-  width: 38px;
-  height: 38px;
-  font-size: 15px;
-}
-
-/* ── Avatar dropdown menu ──────────────────────────────────────────────── */
 
 .header__avatar-menu {
   position: relative;
@@ -217,6 +190,20 @@
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
+}
+
+.header__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-round);
+  border: 2px solid var(--color-border);
+  transition: border-color 0.2s;
+}
+
+.header__avatar.user-avatar__placeholder {
+  width: 38px;
+  height: 38px;
+  font-size: 15px;
 }
 
 .header__avatar-trigger:hover {
@@ -249,17 +236,6 @@
   animation: dropdown-in 0.15s ease;
 }
 
-@keyframes dropdown-in {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .header__dropdown-item {
   display: block;
   width: 100%;
@@ -287,6 +263,28 @@
   background-color: rgba(178, 58, 52, 0.07);
 }
 
+.header__add-clothes-btn {
+  margin: 0 0 0 auto;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+}
+
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 800px) {
   .header {
     flex-wrap: wrap;
@@ -304,6 +302,23 @@
   }
   .header__toggler {
     margin-left: auto;
+  }
+}
+
+/* Small phones: hide the date to keep row 1 compact */
+@media (max-width: 600px) {
+  .header {
+    padding: 10px 0;
+    gap: 8px;
+  }
+
+  .header__search-input {
+    font-size: var(--font-size-xs);
+  }
+
+  .header__toggler_is-active {
+    padding: 16px 0;
+    gap: 14px;
   }
 }
 
@@ -348,23 +363,6 @@
     padding: 24px 0;
     background-color: var(--color-reading-surface);
     box-shadow: var(--shadow-card);
-  }
-}
-
-/* Small phones: hide the date to keep row 1 compact */
-@media (max-width: 600px) {
-  .header {
-    padding: 10px 0;
-    gap: 8px;
-  }
-
-  .header__search-input {
-    font-size: var(--font-size-xs);
-  }
-
-  .header__toggler_is-active {
-    padding: 16px 0;
-    gap: 14px;
   }
 }
 
