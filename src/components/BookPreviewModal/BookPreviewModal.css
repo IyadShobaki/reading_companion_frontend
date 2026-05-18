@@ -147,6 +147,10 @@
 }
 
 @media (max-width: 600px) {
+  .book-preview-modal__container {
+    padding: 20px;
+  }
+
   .book-preview-modal__layout {
     flex-direction: column;
   }

@@ -190,3 +190,9 @@
 .all-notes__note-link:hover {
   color: var(--color-secondary-hover);
 }
+
+@media (max-width: 600px) {
+  .all-notes {
+    padding: 24px 0 40px;
+  }
+}

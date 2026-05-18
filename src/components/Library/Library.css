@@ -109,3 +109,9 @@
 .library__error {
   color: var(--color-error);
 }
+
+@media (max-width: 600px) {
+  .library {
+    padding: 24px 0 48px;
+  }
+}

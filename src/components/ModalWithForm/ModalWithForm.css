@@ -169,6 +169,12 @@
 @media (max-width: 830px) {
   .modal {
     align-items: flex-end;
-    z-index: 3;
+    z-index: 400;
+  }
+
+  .modal__container {
+    max-width: 100%;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 24px 24px 36px;
   }
 }
