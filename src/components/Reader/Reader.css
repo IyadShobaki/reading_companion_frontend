@@ -453,7 +453,7 @@
 
   .reader__controls {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
     padding: 10px;
   }
@@ -470,17 +470,6 @@
 
   .reader__control-group_nav .reader__control-btn:last-child {
     justify-self: end;
-  }
-
-  .reader__control-group_progress {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    margin-left: 0;
-  }
-
-  .reader__go-to-form {
-    display: grid;
-    grid-template-columns: auto minmax(72px, 1fr) auto;
   }
 
   .reader__panel-toggles {
@@ -544,10 +533,9 @@
     min-height: clamp(300px, 52dvh, 520px);
   }
 
-  /* Controls bar: two rows — nav row then utility row */
+  /* Controls bar: collapse to single column on mobile */
   .reader__controls {
-    flex-direction: column;
-    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr);
     gap: 8px;
     padding: 10px;
     margin-bottom: 10px;
