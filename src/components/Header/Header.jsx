@@ -23,12 +23,6 @@ import UserAvatar from "../UserAvatar/UserAvatar";
 
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
-// Computed once at module scope — refreshes only on page load, not on every render
-const currentDate = new Date().toLocaleString("default", {
-  month: "long",
-  day: "numeric",
-});
-
 const noop = () => {};
 
 // Top navigation bar. Renders auth buttons for guests or a profile link for
@@ -97,7 +91,7 @@ function Header({
       <NavLink to="/">
         <img src={logo} alt="App Logo" className="header__logo" />
       </NavLink>
-      <p className="header__date-and-location">{currentDate}</p>
+      <p className="header__title">Reading Companion</p>
 
       <form
         className="header__search-form"

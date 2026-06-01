@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://readingcompanion.jumpingcrab.com",
   "scripts": {
     "dev": "vite --open",
     "build": "vite build",
@@ -12,7 +13,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "predeploy": "npm run build",
-    "deploy": "npm run build && scp -r ./dist/* iyadshobaki82@34.23.12.48:/home/iyadshobaki82/frontend"
+    "deploy": "npm run build && scp -r ./dist/* iyadshobaki82@34.23.12.48:/home/iyadshobaki82/reading_companion_frontend"
   },
   "dependencies": {
     "react": "^19.2.5",
