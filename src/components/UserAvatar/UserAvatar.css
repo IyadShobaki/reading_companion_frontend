@@ -1,0 +1,29 @@
+/* ── UserAvatar ────────────────────────────────────────────────────────────
+   Base styles shared across all usages of the UserAvatar component.
+   Sizing / position overrides live in the consuming component's CSS.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.user-avatar {
+  display: block;
+  border-radius: var(--radius-round);
+  object-fit: cover;
+}
+
+/* Placeholder circle shown when no avatar image is available */
+.user-avatar__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-round);
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
+  /* Default size — overridden by the className passed in from the parent */
+  width: 40px;
+  height: 40px;
+  font-size: var(--font-size-base);
+  line-height: 1;
+  user-select: none;
+  flex-shrink: 0;
+}

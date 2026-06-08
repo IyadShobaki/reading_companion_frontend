@@ -1,0 +1,44 @@
+.book-section {
+  margin-bottom: 48px;
+}
+
+.book-section__title {
+  display: inline-block;
+  margin: 0 0 22px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--color-accent);
+  color: var(--color-black);
+  font-family: var(--font-family-heading);
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.18;
+}
+
+.book-section__loading {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+}
+
+.book-section__error {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.book-section__empty {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black-60);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}

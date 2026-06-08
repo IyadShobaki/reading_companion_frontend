@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Reading Companion favicon: open book on brand accent background -->
+
+  <!-- Rounded square background (#c4602a = brand accent) -->
+  <rect width="32" height="32" rx="6" fill="#c4602a"/>
+
+  <!-- Left page -->
+  <path d="M5.5 10.5 Q10.5 9 15.2 10.5 L15.2 23 Q10.5 21.5 5.5 23 Z" fill="#faf7f2"/>
+
+  <!-- Right page (slightly warmer tone to create depth) -->
+  <path d="M16.8 10.5 Q21.5 9 26.5 10.5 L26.5 23 Q21.5 21.5 16.8 23 Z" fill="#f0e6d8"/>
+
+  <!-- Center spine crease -->
+  <path d="M15.2 10.5 Q16 11.5 16.8 10.5 M15.2 23 Q16 22 16.8 23"
+        stroke="#c4602a" stroke-width="0.7" stroke-linecap="round"/>
+  <line x1="16" y1="11.2" x2="16" y2="22.3" stroke="#c4602a" stroke-width="0.5" opacity="0.7"/>
+
+  <!-- Text lines — left page -->
+  <line x1="7.5" y1="13.5" x2="13.5" y2="12.8" stroke="#a07050" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+  <line x1="7.5" y1="15.8" x2="13.5" y2="15.1" stroke="#a07050" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+  <line x1="7.5" y1="18.1" x2="13.5" y2="17.4" stroke="#a07050" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+  <line x1="7.5" y1="20.4" x2="11.5" y2="19.9" stroke="#a07050" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+
+  <!-- Text lines — right page -->
+  <line x1="18.5" y1="12.8" x2="24.5" y2="13.5" stroke="#a07050" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+  <line x1="18.5" y1="15.1" x2="24.5" y2="15.8" stroke="#a07050" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+  <line x1="18.5" y1="17.4" x2="24.5" y2="18.1" stroke="#a07050" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+  <line x1="18.5" y1="19.9" x2="22.5" y2="20.4" stroke="#a07050" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+</svg>

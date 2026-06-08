@@ -1,0 +1,127 @@
+:root {
+  /* Concept: Focused Reader - calm paper, restrained chrome, reading-first UI */
+
+  /* Colors */
+  --color-bg: #fbf8f1;
+  --color-surface: #fffdf8;
+  --color-panel: #f3efe7;
+  --color-reading-surface: #fffefa;
+  --color-black: #171717;
+  --color-white: #ffffff;
+  --color-accent: #b66a50;
+  --color-accent-hover: #944d38;
+  --color-secondary: #496a81;
+  --color-secondary-hover: #355369;
+  --color-muted: #747066;
+  --color-overlay: rgba(23, 23, 23, 0.48);
+  --color-border: #e8e5de;
+  --color-black-60: rgba(23, 23, 23, 0.62);
+  --color-black-40: rgba(23, 23, 23, 0.42);
+  --color-black-30: rgba(23, 23, 23, 0.28);
+  --color-black-20: rgba(23, 23, 23, 0.16);
+  --color-black-10: rgba(23, 23, 23, 0.1);
+  --color-black-50: rgba(23, 23, 23, 0.5);
+  --color-error: #b23a34;
+
+  /* Typography */
+  --font-family: "Cabinet Grotesk", "Arial", sans-serif;
+  --font-family-heading: "Literata", "Georgia", serif;
+  --font-family-mono: "DM Mono", "Courier New", monospace;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 28px;
+  --font-size-2xl: 38px;
+  --line-height-base: 20px;
+  --line-height-lg: 24px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-round: 50%;
+
+  /* Shadows */
+  --shadow-card:
+    0 1px 2px rgba(23, 23, 23, 0.06), 0 12px 30px rgba(23, 23, 23, 0.08);
+  --shadow-reader: 0 20px 70px rgba(23, 23, 23, 0.16);
+  --shadow-modal: 0 20px 70px rgba(23, 23, 23, 0.22);
+
+  /* Layout */
+  --max-width: 1360px;
+  --padding-page: 40px;
+  --padding-page-mobile: 16px;
+  --header-height: 80px;
+}
+
+.page {
+  background-color: var(--color-bg);
+  color: var(--color-black);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  min-height: 100vh;
+}
+
+.page__content {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--padding-page);
+}
+
+/* Reader page: content fills full viewport width; give the shared Header
+   its own horizontal padding so it looks identical to every other page. */
+.page_reader .page__content {
+  max-width: none;
+  padding: 0;
+}
+
+.page_reader .header {
+  padding-left: var(--padding-page);
+  padding-right: var(--padding-page);
+}
+
+.page_reader .footer {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .page__content {
+    padding: 0 var(--padding-page-mobile);
+  }
+
+  .page_reader .header {
+    padding-left: var(--padding-page-mobile);
+    padding-right: var(--padding-page-mobile);
+  }
+}
+
+.page__session-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background-color: #fff4d8;
+  color: #5c4412;
+  border: 1px solid #ead39a;
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  margin: 12px 0 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.page__session-banner-close {
+  background: none;
+  border: none;
+  color: #5c4412;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 4px;
+}
